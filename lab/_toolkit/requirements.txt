@@ -1,0 +1,28 @@
+# open-agent-memory toolkit dependencies
+# Install with: pip install -r requirements.txt
+
+# Core dependencies
+Pillow
+imagehash
+numpy
+opencv-python
+requests
+beautifulsoup4
+
+# Spreadsheet support
+pandas
+openpyxl
+xlrd
+xlwt
+
+# OCR support
+rapidocr_onnxruntime
+
+# Archive support
+rarfile
+
+# AI API support (optional - only if using AI features)
+replicate
+
+# AVIF support
+pillow-avif-plugin
