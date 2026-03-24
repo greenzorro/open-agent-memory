@@ -11,7 +11,7 @@ You are operating within a **Hybrid Compute Architecture**.
   * **In Cloud Mode (`env: cloud`)**: You are ephemeral and stateless. Your memory is wiped after every session.
   * **In Local Mode (`env: local`)**: You are persistent and stateful. You have full access to the host file system and tools.
 * **This Repository (`agent-workspace`)**: This is your persistent State, your external Brain, and your Action Space. It is the single source of truth that synchronizes across all nodes.
-* **The User**: The Architect (customize in `.memory/entities/`).
+* **The User**: The Architect (Victor42).
 
 ## 2. The Scope Isolation Law (Strict Boundary)
 
@@ -35,7 +35,7 @@ agent-workspace/
 │   ├── entities/               # [READ/WRITE] System Nouns
 │   └── corrections/            # [READ/WRITE] Error Logs & Fixes
 └── lab/                        # THE BODY (Execution Zone)
-    ├── _toolkit/               # [READ/WRITE] Reusable Glue Code & Scripts
+    ├── _toolkit/               # [CLOUD-ONLY] Sanitized routine tools (cloud-only mirror)
     └── <temporary_projects>/   # [READ/WRITE] Ephemeral Scratchpads
 ```
 
@@ -43,7 +43,7 @@ agent-workspace/
 This directory contains your long-term memory. It is divided into two operational zones:
 
 * **`00_kernel/` [READ-ONLY]**: The core operating system. You are **strictly forbidden** from modifying files here. It contains:
-  * `persona.md`: The User's psychographic profile, analytical frameworks, and your required communication style.
+  * `persona.md`: The User's psychographic profile (INTJ), analytical frameworks (MECE), and your required communication style.
   * `memory_schema.md`: The strict YAML Frontmatter formatting rules you must follow when writing new memories.
 
 * **Knowledge Folders [READ/WRITE]**: The only places you are allowed to save new memories.
@@ -55,7 +55,12 @@ This directory contains your long-term memory. It is divided into two operationa
 ### `/lab/` (The Body - Execution Zone)
 
 This is your flattened, volatile execution space.
-* **`_toolkit/` [READ/WRITE]**: The machinery. This specifically prefixed folder stores reusable, generalized Python/Shell "glue code" and automation scripts.
+
+* **`_toolkit/` [CLOUD-ONLY]**: Sanitized mirror of `routine` toolkit.
+  * **Cloud Mode**: Use this (safe utilities only, sensitive functions removed)
+  * **Local Mode**: Use `BASE_PATH_CODING/routine/` directly instead
+  * **Trigger keywords**: `日常工具`, `日常工具包`, `routine工具`
+
 * **Ephemeral Project Folders [READ/WRITE]**: You may create any temporary subdirectories here (e.g., `/lab/data_cleaning_v1/`) to execute specific tasks. These are strictly scratchpads and will be deleted or migrated by the User once the task is complete.
 
 ## 4. The Pre-flight Retrieval Protocol (Mandatory)
@@ -63,13 +68,20 @@ This is your flattened, volatile execution space.
 You must NOT rely solely on your base training data. Before executing any complex task, writing code, or doing data analysis, you MUST actively fetch relevant context from your Memory Brain.
 
 **When the User gives you a task, execute this sequence FIRST:**
-0. **Environment Sniffing**: Determine if you are running in a Cloud Sandbox (Linux, stateless, no GUI) or Local Machine (MacOS/Windows, persistent, GUI/Audio support).
+0. **Environment Sniffing**: Determine if you are running in a Cloud Sandbox (Linux, stateless, no GUI) or Local Machine (MacOS, persistent, GUI/Audio support).
 1. **Keyword Extraction**: Identify the core technologies or concepts in the task (e.g., "Python", "Plotly", "OSINT", "Git").
 2. **Search Memory**:
    - For **keyword search**: `grep -ri "keyword" .memory/*/*.md`
    - For **env-aware filtering** (load applicable memories): See "Environment-Aware Memory Loading" below.
 3. **Load Context**: Use `cat` to read the specific `.md` files that matched your search.
-4. **Execute**: Only after loading the User's specific preferences and past corrections into your context window should you begin planning and executing the actual task.
+4. **Dependency Check (MANDATORY for code execution)**:
+   Before executing any Python script or code that requires third-party packages:
+   - **Confirm Python environment**: `which python3` — verify the actual interpreter path
+   - **Check for `requirements.txt`**: Look in the script's directory and parent directories
+   - **If exists**: `python3 -m pip install -r requirements.txt` (use the same interpreter)
+   - **If not**: Scan `import` statements, identify third-party libraries, install all at once
+   - **NEVER** install packages one-by-one upon encountering errors — this is inefficient
+5. **Execute**: Only after completing the above steps should you begin planning and executing the actual task.
 
 ### Environment-Aware Memory Loading (Verified Command Patterns)
 
@@ -86,10 +98,11 @@ grep -r '^env: "local"' .memory/ | cut -d: -f1 | sort -u | xargs cat
 grep -r '^env: "cloud"' .memory/ | cut -d: -f1 | sort -u | xargs cat
 ```
 
-**Combined Pattern** (recommended for Agent initialization):
+**Combined Pattern** (recommended for Agent Vik initialization):
 ```bash
 # Load global + environment-specific memories in one pass
-grep -rE '^env: "(global|local)"' ".memory/" | cut -d: -f1 | sort -u | xargs cat
+AGENTS_DIR="/Users/colachan/Resilio/coding/agent-workspace"  # Adjust path per platform
+grep -rE '^env: "(global|local)"' "BASE_PATH_CODING/agent-workspace/.memory/" | cut -d: -f1 | sort -u | xargs cat
 ```
 
 ## 5. The Self-Evolution Protocol (`/learn`)
@@ -101,8 +114,8 @@ When the User issues the command **`/learn`** (or explicitly asks you to save a 
 3. Abstract the learning away from specific project details.
 
 ### Step 2: Content Sanitization & Formatting
-1. **Path Abstraction Scan (CRITICAL)**: Before writing, you **MUST** scan your content for any absolute file paths. Replace them with the standardized variables defined in `lab/_toolkit/utils/path.py` (e.g., `PATH_DOWNLOADS`, `HOME`).
-   * *Rule*: Always match the longest path first.
+1. **Path Abstraction Scan (CRITICAL)**: Before writing, you **MUST** scan your content for any absolute file paths. Replace them with the standardized variables defined in `routine/utils/path.py` (e.g., `BASE_PATH_CODING`, `PATH_DOWNLOADS`).
+   * *Rule*: Always match the longest path first (e.g., replace `.../coding/agent-workspace` before `.../coding`).
 2. **Format**: Draft the file using the strict YAML Frontmatter. Set `env` correctly (`global`, `cloud`, or `local`).
 
 ### Step 3: Persistence Strategy (Environment Logic)
@@ -110,7 +123,7 @@ When the User issues the command **`/learn`** (or explicitly asks you to save a 
   * Execute `git pull origin main` -> `git add` -> `git commit` -> `git push`.
 * **IF in Local Mode (`env: local`)**:
   * **Write to disk only.**
-  * Notify User: "Memory written to local disk. Please review and commit manually."
+  * Notify User: "Memory written to to local disk. Please review and commit manually."
   * **Do NOT** execute git commands automatically.
 
 ## 6. INITIALIZATION SEQUENCE (Action Required)
