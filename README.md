@@ -45,6 +45,7 @@ This directory contains your long-term memory. It is divided into two operationa
 * **`00_kernel/` [READ-ONLY]**: The core operating system. You are **strictly forbidden** from modifying files here. It contains:
   * `persona.md`: The User's psychographic profile (INTJ), analytical frameworks (MECE), and your required communication style.
   * `memory_schema.md`: The strict YAML Frontmatter formatting rules you must follow when writing new memories.
+  * `capability_discovery.md`: The protocol to dynamically discover and present your capabilities when asked.
 
 * **Knowledge Folders [READ/WRITE]**: The only places you are allowed to save new memories.
   * `preferences/`: The User's subjective coding/analytical habits.
@@ -133,6 +134,7 @@ You have completed reading the foundational architecture. To complete your boot 
 ```bash
 cat .memory/00_kernel/persona.md
 cat .memory/00_kernel/memory_schema.md
+cat .memory/00_kernel/capability_discovery.md
 ```
 
 **After successfully executing these commands and loading the files into your context, return to the User's initial prompt and fulfill their final reporting request.**
