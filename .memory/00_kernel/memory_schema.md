@@ -70,12 +70,45 @@ You must classify the memory into exactly ONE of the following types and save it
 * **Target Folder**: `.memory/corrections/`
 * **Example**: "Do not attempt to write SSH private keys to disk due to HARD_BLOCKED_SECRET_FILE. Use HTTPS PAT instead."
 
-## 4. Body Content Formatting
+## 4. Writing Effectiveness
+
+Correct format ≠ effective content. A perfectly formatted memory that agents don't follow is wasted tokens.
+
+### 4.1 Tags Are Triggers, Not Summaries
+
+The `tags` field and the opening lines of body content serve one purpose: let future agents decide "do I need to load this memory?"
+
+- ✅ Write triggering conditions, problem symptoms, use scenarios
+- ❌ Write content summaries or workflow steps
+
+**Why**: If tags/opening summarize the content, agents may read only the tags and assume they understand — skipping the very details that matter most.
+
+**Examples**:
+- ❌ `"tags": ["TDD", "write tests first", "red-green-refactor"]` — this summarizes content
+- ✅ `"tags": ["testing", "implementation", "quality-gate"]` — this marks trigger scenarios
+
+### 4.2 Learn From Failure, Not Imagination
+
+When executing `/learn`, prioritize extracting rules from **actual failures observed in the current session**, rather than speculating about what "should" be done.
+
+- Writing rules without first observing failure = writing code without first writing tests
+- Rules should address "mistakes the agent actually makes," not "mistakes it theoretically could make"
+- If no failure was observed this session, `/learn` should not produce `correction` — that type by definition requires a documented failure. `principle`, `preference`, and `entity` can be proactive.
+
+### 4.3 Plug Rationalization Loopholes
+
+Agents are smart enough to find seemingly reasonable excuses to violate rules under pressure. Discipline-type memories (`principle`, `correction`) MUST proactively block known rationalization paths:
+
+- **Explicitly list** a "common excuse → rebuttal" table
+- Include a foundational statement like "violating the letter of the rule IS violating the spirit" to block "I followed the spirit" excuses
+- For every "do not do X," append a specific list of "nor may you bypass this via the following methods"
+
+## 5. Body Content Formatting
 
 * **Keep it MECE**: Mutually Exclusive, Collectively Exhaustive.
 * **Be Concise**: Use bullet points. Do not write chatty introductions or conclusions. Treat it like a database record.
 
-## 5. Path Abstraction Standards (Cross-Platform Portability)
+## 6. Path Abstraction Standards (Cross-Platform Portability)
 
 To ensure memories work across Windows, Linux, and MacOS, you are **STRICTLY FORBIDDEN** from writing hardcoded absolute paths in memory content.
 
