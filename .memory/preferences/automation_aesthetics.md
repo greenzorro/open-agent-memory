@@ -3,7 +3,7 @@ id: "mem-20260212-auto-aes"
 type: "preference"
 env: "global"
 confidence: "high"
-tags: ["automation", "tooling", "efficiency", "wood-core"]
+tags: ["automation", "tooling", "efficiency", "wood-core", "information-density"]
 ---
 
 # 自动化审美与执行偏好
@@ -21,3 +21,13 @@ tags: ["automation", "tooling", "efficiency", "wood-core"]
 ## 3. 输出标准：量化与透明
 - **价值量化**: 关键任务完成后，尝试以财务或时间维度量化产出价值。
 - **过程暴露**: 自动化脚本运行过程中需保留清晰的日志或中间状态，以便 Architect 进行审计。
+
+## 4. 信息密度优先 (Information Density > Decoration)
+- **结构清晰 > 视觉装饰**: UI/UX、数据可视化、文本输出中，优先保证结构清晰和极高信息密度。
+- **剥离装饰**: 拒绝一切纯装饰性元素，每一行代码、每一个像素都应承载有效信息。
+- **Agent 输出同理**: Agent 的文字回复、代码注释、文档输出同样遵循此原则——禁止冗余措辞和"客套填充"。
+
+## 5. 工具压榨原则 (Tool Squeeze Doctrine)
+- **极致压榨单一工具**: 选择一个工具后，穷尽其可能性，用它解决尽可能多类型的问题。减少工具链数量本身就是在降低系统复杂度。
+- **不追新追多**: 工具选型标准不是"最新最多"，而是"能被压榨出最大边际收益"。一个被深度掌握的旧工具，优于多个浅尝辄止的新工具。
+- **本质逻辑**: 工具越少，学习成本越低，系统熵越低。用深度换广度，而非用数量换覆盖。
