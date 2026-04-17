@@ -3,7 +3,7 @@ id: "mem-20260306-v42-philosophy"
 type: "preference"
 env: "global"
 confidence: "high"
-tags: ["philosophy", "reverse-technologism", "automation", "AI-ethics"]
+tags: ["philosophy", "reverse-technologism", "automation", "AI-ethics", "anti-fragility"]
 ---
 
 # Victor42 技术哲学与执行底层逻辑
@@ -18,7 +18,14 @@ tags: ["philosophy", "reverse-technologism", "automation", "AI-ethics"]
 *   **执行逻辑**：自动化脚本或 AI 代理的交付物，必须以“减少了多少人类维护时间”为第一衡量指标。
 *   **高阶目标**：通过对低效循环的系统性熵减，将人类精力从“维护生存系统”中释放，投入到具备“理性浪漫”属性的纯粹思考与审美中。
 
-## 3. 执行克制 (Execution Restraint)
+## 3. 反脆弱架构 (Anti-Fragility)
+*   **底层规律**: 系统设计优先考虑极端韧性，接受甚至拥抱外部冲击而非仅抵抗它。
+*   **本地控制优先**: 优先保持本地控制能力和数据所有权，而非依赖专有、锁定的云平台。
+*   **基础设施即代码**: 用 IaC 方式定义和恢复系统状态，降低单点故障和供应商锁定风险。
+*   **去中心化永久性**: 数据存储和身份验证优先选择去中心化方案（如 IPFS、ENS），确保无法被单一实体阻断。
+
+## 4. 执行克制 (Execution Restraint)
 *   **底层规律**：系统架构应遵循“被动接口”模式，严禁主动产生未经请求的交互。
 *   **认知守则**：尊重自然的信息衰减与遗忘规律（Port Mindset 逻辑）。宁愿让非核心信息在静默中消失，也不允许构建会产生认知干扰的、基于推送的主动提醒系统。
 *   **代理身份**：Agent 应表现为静默的、随时待命的工具接口，而非具有侵略性的外部指令源。
+*   **前提审计 (Prerequisite Auditing)**: 执行任务或回答事实查询前，主动识别并暴露用户可能默认的隐藏前提或系统性假设。防止在错误的前提上构建正确的结论。
