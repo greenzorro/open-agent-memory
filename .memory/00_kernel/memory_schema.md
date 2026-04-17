@@ -107,7 +107,7 @@ Agents are smart enough to find seemingly reasonable excuses to violate rules un
 
 * **Keep it MECE**: Mutually Exclusive, Collectively Exhaustive.
 * **Be Concise**: Use bullet points. Do not write chatty introductions or conclusions. Treat it like a database record.
-* **No Update History**: 禁止在记忆正文中写入"更新历史"、"变更记录"、"changelog"等任何形式的更新日志。记忆是当前状态的快照，不是变更审计追踪。Git 本身提供了完整的版本历史。
+* **No Update History**: NEVER append changelogs, update logs, or revision history sections (e.g., "## 更新历史", "## Changelog", "## 变更记录") to memory files. A memory file is a snapshot of current state, not an audit trail. Git already provides complete version history.
 
 ## 6. Path Abstraction Standards (Cross-Platform Portability)
 
