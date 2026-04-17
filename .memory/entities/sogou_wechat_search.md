@@ -30,7 +30,7 @@ https://wx.sogou.com/weixin?type=2&query={keyword}
 
 ### 备用路径：Cloudflare 云端浏览器（反爬拦截时启用）
 
-当本地浏览器被搜狗反爬机制拦截（headless browser detection、403、验证码等），**切换到 Cloudflare Browser Run**，因为 Cloudflare 的边缘 IP 不会被搜狗封禁。凭证与详细调用方式见 → `cloudflare_browser_run.md`。
+当本地浏览器被搜狗反爬机制拦截（headless browser detection、403、验证码等），**切换到 Cloudflare Browser Run**，因为 Cloudflare 的边缘 IP 不会被搜狗封禁。凭证与调用方式见 → `cloudflare_agent_platform.md`。
 
 ## 决策逻辑
 
@@ -48,7 +48,7 @@ https://wx.sogou.com/weixin?type=2&query={keyword}
 - 搜狗收录范围非全量（用户的文章可能搜不到，即使标题完全匹配）
 - 搜狗排序算法不透明，同名文章不一定排在第一位
 - 搜狗无主动提交入口，收录是黑盒
-- 搜索结果中的文章链接经过搜狗多次跳转后最终到达微信公众号原文页，在无头浏览器中可能需要跟随重定向才能获取原文内容
+- 搜索结果中的文章链接经搜狗多次跳转后最终到达微信公众号原文页（GUI 浏览器中已验证）；但 Cloudflare Browser Run 的 Quick Actions 是单次请求模式，无法自动跟随多次跳转，因此尚未通过云端路径成功到达原文页
 
 ## 更新历史
 
