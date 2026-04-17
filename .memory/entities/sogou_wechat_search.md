@@ -1,7 +1,7 @@
 ---
 id: "mem-20260417-sgwx"
 type: "entity"
-env: "cloud"
+env: "global"
 confidence: "high"
 tags: ["sogou", "wechat", "微信公众号", "search", "article", "搜狗", "反爬", "cloudflare"]
 ---
