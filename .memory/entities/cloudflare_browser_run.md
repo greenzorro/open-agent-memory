@@ -17,10 +17,10 @@ tags: ["cloudflare", "browser-run", "headless-browser", "anti-crawl", "web-scrap
 | 属性 | 说明 |
 |------|------|
 | **API Token** | Cloudflare API Token（需自行申请，赋予 Browser Run 权限） |
-| **Account ID** | Cloudflare Account ID（在 Dashboard → Workers & Pages 中查看） |
+| **Account ID** | Cloudflare Account ID（在 Dashboard 中查看） |
 | **计划** | Workers Free 即可使用 |
 
-> **部署说明**：使用前请将 Token 和 Account ID 配置为环境变量 `CF_TOKEN` 和 `CF_ACCOUNT_ID`，或在调用时直接替换下方的占位符。
+> **部署说明**：使用前请将 Token 和 Account ID 配置为环境变量 `CF_TOKEN` 和 `CF_ACCOUNT_ID`，或在调用时直接替换。
 
 ## 已验证可用的 Quick Actions
 
@@ -65,17 +65,6 @@ curl -s -X POST "https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/bro
 | 请求间隔 | 每 10 秒 1 次 (Quick Actions) |
 | /crawl | 5 次/天，每次最多 100 页 |
 | 浏览器超时 | 60 秒（可通过 keep_alive 延长至 10 分钟） |
-
-## 未验证能力
-
-- **CDP Session（Puppeteer/Playwright）**：HTTP 端点返回 404，可能需通过 Worker 或 SDK 接入
-- **Live View / Human in the Loop**：需要前端 UI，沙盒内无法直接使用
-- **WebMCP**：需要 Chromium 146+，属于实验性功能
-
-## 已验证实战案例
-
-- 搜狗微信搜索（`wx.sogou.com`）在沙盒被反爬拦截，通过 Browser Run `/markdown` 端点成功获取完整搜索结果
-- 搜索关键词"中东乱局80年"和"手把手教你制作旅行攻略"均返回完整的微信公众号文章列表
 
 ## 更新历史
 
