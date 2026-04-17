@@ -1,7 +1,7 @@
 ---
 id: "mem-20260417-cfap"
 type: "entity"
-env: "cloud"
+env: "global"
 confidence: "high"
 tags: ["cloudflare", "api", "cloud-platform", "browser-run", "workers", "ai-agent", "anti-crawl"]
 ---
