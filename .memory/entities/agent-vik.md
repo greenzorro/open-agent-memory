@@ -42,6 +42,3 @@ Agent Vik (Compute Node)
     └── 遵循 → persona.md (Cognitive Model)
 ```
 
-## 更新历史
-
-- 2026-02-11: 初始创建，定义身份实体
