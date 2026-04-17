@@ -24,38 +24,23 @@ https://wx.sogou.com/weixin?type=2&query={keyword}
 
 ## 执行策略
 
-### 主路径：沙盒本地浏览器（agent-browser）
+### 主路径：当前环境的本地浏览器
 
-```bash
-agent-browser open "https://wx.sogou.com/weixin?type=2&query={keyword}"
-agent-browser snapshot -i
-```
+优先使用当前运行环境自带的浏览器工具（如 agent-browser、Playwright 等）直接访问搜狗微信搜索页面并提取结果。
 
 ### 备用路径：Cloudflare 云端浏览器（反爬拦截时启用）
 
-当沙盒本地浏览器被搜狗反爬机制拦截（headless browser detection、403、验证码等），**必须切换到 Cloudflare Browser Run**，因为 Cloudflare 的边缘 IP 不会被搜狗封禁。
-
-```bash
-ACCOUNT_ID="${CF_ACCOUNT_ID}"    # 替换为你的 Cloudflare Account ID
-CF_TOKEN="${CF_TOKEN}"            # 替换为你的 Cloudflare API Token
-
-curl -s -X POST "https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/browser-rendering/markdown" \
-  -H "Authorization: Bearer ${CF_TOKEN}" \
-  -H "Content-Type: application/json" \
-  -d '{"url": "https://wx.sogou.com/weixin?type=2&query={keyword}"}'
-```
-
-> 凭证与详细调用方式见 → `cloudflare_browser_run.md`
+当本地浏览器被搜狗反爬机制拦截（headless browser detection、403、验证码等），**切换到 Cloudflare Browser Run**，因为 Cloudflare 的边缘 IP 不会被搜狗封禁。凭证与详细调用方式见 → `cloudflare_browser_run.md`。
 
 ## 决策逻辑
 
 ```
 搜索微信公众号文章
-    ├── 沙盒本地 agent-browser 可用？
+    ├── 本地浏览器可用？
     │   ├── 是 → 使用本地浏览器（零成本，无速率限制）
-    │   └── 否（被反爬拦截）→ 使用 Cloudflare Browser Run
-    │       ├── 调用 /markdown 端点获取搜索结果
-    │       └── 注意 Free 计划每 10 秒 1 次请求
+    │   └── 否（被反爬拦截）→ 切换到 Cloudflare Browser Run
+        ├── 调用 /markdown 端点获取搜索结果
+        └── 注意 Free 计划每 10 秒 1 次请求
 ```
 
 ## 局限性
@@ -63,7 +48,7 @@ curl -s -X POST "https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/bro
 - 搜狗收录范围非全量（用户的文章可能搜不到，即使标题完全匹配）
 - 搜狗排序算法不透明，同名文章不一定排在第一位
 - 搜狗无主动提交入口，收录是黑盒
-- 搜索结果中的文章链接指向搜狗的跳转页，非公众号原文直链
+- 搜索结果中的文章链接经过搜狗多次跳转后最终到达微信公众号原文页，在无头浏览器中可能需要跟随重定向才能获取原文内容
 
 ## 更新历史
 
