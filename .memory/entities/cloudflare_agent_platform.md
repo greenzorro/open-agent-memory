@@ -3,7 +3,7 @@ id: "mem-20260417-cfap"
 type: "entity"
 env: "global"
 confidence: "high"
-tags: ["cloudflare", "api", "cloud-platform", "browser-run", "workers", "ai-agent"]
+tags: ["cloudflare", "api", "cloud-platform", "browser-run", "workers", "ai-agent", "anti-crawl"]
 ---
 
 # Cloudflare — AI Agent 云端平台
