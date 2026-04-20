@@ -24,10 +24,12 @@ def resolve_port(workdir: Path, port: str) -> Path:
 
 
 def collect_from_root(workdir: Path, exclude_dirs: set, exclude_files: set) -> list[Path]:
-    """Find loose files in workdir root (skip excluded dirs/files)."""
+    """Find loose files and non-excluded directories in workdir root."""
     targets = []
     for item in workdir.iterdir():
         if item.is_file() and item.name not in exclude_files:
+            targets.append(item)
+        elif item.is_dir() and item.name not in exclude_dirs:
             targets.append(item)
     return targets
 
@@ -46,11 +48,11 @@ def collect_from_sources(workdir: Path, sources: list[str], exclude_files: set) 
 
 
 def move_to_port(filepath: Path, port: Path, dry_run: bool = False) -> str:
-    """Move a file to port/, handling name conflicts by appending counter."""
+    """Move a file or directory to port/, handling name conflicts by appending counter."""
     dest = port / filepath.name
     if dest.exists():
-        stem = filepath.stem
-        suffix = filepath.suffix
+        stem = filepath.stem if filepath.is_file() else filepath.name
+        suffix = filepath.suffix if filepath.is_file() else ""
         counter = 1
         while dest.exists():
             dest = port / f"{stem}_{counter}{suffix}"
@@ -59,11 +61,13 @@ def move_to_port(filepath: Path, port: Path, dry_run: bool = False) -> str:
     action = "Would move" if dry_run else "Moving"
     if not dry_run:
         shutil.move(str(filepath), str(dest))
-    return f"  {action}: {filepath.name} -> {dest.name}"
+
+    item_type = "directory" if filepath.is_dir() else "file"
+    return f"  {action}: {filepath.name}/ ({item_type}) -> {dest.name}" if filepath.is_dir() else f"  {action}: {filepath.name} -> {dest.name}"
 
 
 def purge_old_files(port: Path, ttl_days: int, dry_run: bool = False) -> list[str]:
-    """Delete files in port/ older than TTL (based on st_mtime)."""
+    """Delete files and directories in port/ older than TTL (based on st_mtime)."""
     now = time.time()
     ttl_seconds = ttl_days * 24 * 3600
     purged = []
@@ -72,15 +76,18 @@ def purge_old_files(port: Path, ttl_days: int, dry_run: bool = False) -> list[st
         return purged
 
     for item in port.iterdir():
-        if not item.is_file():
-            continue
         age = now - item.stat().st_mtime
         if age > ttl_seconds:
             action = "Would purge" if dry_run else "Purged"
-            size_kb = item.stat().st_size / 1024
-            if not dry_run:
-                item.unlink()
-            purged.append(f"  {action}: {item.name} ({size_kb:.0f}KB, {age/86400:.1f} days old)")
+            if item.is_file():
+                size_kb = item.stat().st_size / 1024
+                if not dry_run:
+                    item.unlink()
+                purged.append(f"  {action}: {item.name} ({size_kb:.0f}KB, {age/86400:.1f} days old)")
+            elif item.is_dir():
+                if not dry_run:
+                    shutil.rmtree(str(item))
+                purged.append(f"  {action}: {item.name}/ (directory, {age/86400:.1f} days old)")
     return purged
 
 
@@ -116,6 +123,11 @@ def main():
     exclude_dirs = set(args.exclude_dirs)
     exclude_files = set(args.exclude_files)
 
+    if port.is_relative_to(workdir):
+        exclude_dirs.add(port.relative_to(workdir).as_posix())
+    for src in args.sources:
+        exclude_dirs.add(src)
+
     if not workdir.exists():
         print(f"Error: Working directory {workdir} does not exist.")
         sys.exit(1)
@@ -129,32 +141,32 @@ def main():
     print(f"TTL:     {args.ttl} days")
     print()
 
-    # Phase 1: Consolidate scattered files
-    print("--- Phase 1: Consolidate scattered files ---")
+    # Phase 1: Consolidate scattered items
+    print("--- Phase 1: Consolidate scattered items ---")
     scattered = collect_from_root(workdir, exclude_dirs, exclude_files)
     scattered += collect_from_sources(workdir, args.sources, exclude_files)
     if scattered:
         for f in sorted(scattered):
             print(move_to_port(f, port, args.dry_run))
-        print(f"  Total: {len(scattered)} files consolidated")
+        print(f"  Total: {len(scattered)} items consolidated")
     else:
-        print("  No scattered files found.")
+        print("  No scattered items found.")
 
     print()
 
-    # Phase 2: Purge old files
-    print("--- Phase 2: Purge files older than TTL ---")
+    # Phase 2: Purge expired items
+    print("--- Phase 2: Purge expired items ---")
     purged = purge_old_files(port, args.ttl, args.dry_run)
     if purged:
         for line in purged:
             print(line)
-        print(f"  Total: {len(purged)} files purged")
+        print(f"  Total: {len(purged)} items purged")
     else:
-        print("  No files exceeded TTL.")
+        print("  No items exceeded TTL.")
 
     # Summary
-    remaining = sum(1 for f in port.iterdir() if f.is_file())
-    print(f"\n  Port status: {remaining} files in {port}")
+    remaining = sum(1 for _ in port.iterdir())
+    print(f"\n  Port status: {remaining} items in {port}")
     print("=== Done ===")
 
 
