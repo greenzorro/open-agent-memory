@@ -4,7 +4,7 @@ Project: routine
 Created: 2026-04-16 21:00:00
 Author: Victor Cheng
 Email: hi@victor42.work
-Description: 沙盒工作目录文件归拢与过期清理，基于 Port Thinking
+Description: 沙盒工作目录文件归拢与过期清理，基于港口思维（https://victor42.eth.limo/post/3627）
 """
 
 import sys
