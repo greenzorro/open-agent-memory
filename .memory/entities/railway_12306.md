@@ -44,6 +44,4 @@ GET https://kyfw.12306.cn/otn/resources/js/framework/station_name.js
 - ~~search.12306.cn~~ — 功能有限，仅车次号搜索
 - ~~其他 OTA 平台直连 API~~ — 均无公开接口
 
----
-*创建: 2026-04-22*
-*更新: 2026-04-22 v3 — 确定携程 Browser Rendering 为唯一方案，清除所有 12306 API 方案，仅保留 station_name.js 静态资源*
+
