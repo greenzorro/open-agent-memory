@@ -24,4 +24,4 @@ GET https://kyfw.12306.cn/otn/resources/js/framework/station_name.js
 
 - 无反爬保护，可直接 curl 获取
 - 全国 3365 个站点的完整站名↔电报码对照表
-- 常用站点代码备查：杭州西=HVU、杭州东=HGH、杭州=HZH、杭州南=XHH、苏州=SZH、苏州北=OHH、苏州南=SMU
+
