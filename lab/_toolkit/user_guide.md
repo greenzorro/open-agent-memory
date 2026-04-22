@@ -1,16 +1,16 @@
-# Toolkit 使用手册
+# Routine AI使用手册
 
-本手册面向 AI 助手，说明工具包中所有脚本的功能和用途，便于 AI 作为工具执行具体任务。
+本手册面向AI助手，说明routine项目中所有脚本的功能和用途，便于AI作为工具执行具体任务。
 
 ## 项目概述
 
-`_toolkit` 是日常开发的全能工具集，提供图像处理、视频处理、文件转换、AI API 调用等多种工具。所有脚本均支持命令行参数调用，可被 AI 直接执行。
+`_toolkit` 是日常开发的工具集（从routine同步净化而来），提供文件处理、数据转换、视频处理等多种工具。所有脚本均支持命令行参数调用，可被AI直接执行。
 
 **核心特性：**
-- 🤖 **AI 友好**：所有脚本支持命令行参数，适合 AI 调用
+- 🤖 **AI友好**：所有脚本支持命令行参数，适合AI调用
 - 🔄 **双模式**：命令行模式（主要）+ 交互模式（备用）
-- 📦 **模块化**：核心功能封装在 utils 库中
-- 🌐 **跨平台**：支持 Windows/Linux/macOS
+- 📦 **模块化**：核心功能封装在utils库中
+- 🌐 **跨平台**：支持Windows/WSL/Linux/macOS
 
 ## 目录结构
 
@@ -19,7 +19,10 @@ _toolkit/
 ├── 根目录脚本/      - 文件管理、数据转换工具
 ├── image/          - 图像处理工具集
 ├── video/          - 视频处理工具集
-└── utils/          - 核心工具函数库
+├── tasks/          - 任务定义文档
+├── utils/          - 核心工具函数库
+├── requirements.txt - Python依赖
+└── user_guide.md   - 本手册
 ```
 
 ## 使用方式
@@ -38,6 +41,8 @@ python script.py -s /path/to/input -o /path/to/output
 
 ### 查看帮助
 
+**查看任何脚本的参数和详细说明：**
+
 ```bash
 python script.py --help
 python script.py -h
@@ -55,13 +60,29 @@ python script.py
 
 ## 根目录工具
 
-### `folder_ungroup.py` - 文件夹解组工具
+### 文件管理工具
+
+#### `folder_ungroup.py` - 文件夹解组工具
 **功能：** 将嵌套文件夹中的所有文件提取到单一文件夹中
 
 ---
 
-### `convertor.py` - 通用格式转换器
-**功能：** 批量转换文件格式（基于 ffmpeg 和 Pillow）
+#### `rename_by_csv.py` - CSV批量重命名工具
+**功能：** 根据CSV文件中的映射关系批量重命名文件
+
+**CSV文件格式：** 必须包含 `name` 列，源文件名需要包含数字序号
+
+---
+
+#### `port_cleaner.py` - 港口清理工具
+**功能：** 工作目录文件归拢与过期清理（基于港口思维）
+
+---
+
+### 数据转换工具
+
+#### `convertor.py` - 通用格式转换器
+**功能：** 批量转换文件格式（基于ffmpeg和Pillow）
 
 **支持的格式转换：**
 
@@ -80,8 +101,13 @@ python script.py
 
 ---
 
-### `ai_studio_2_md.py` - AI Studio 聊天记录转换器
-**功能：** 将 AI Studio 的 JSON 聊天记录转换为格式化的 Markdown 文档（自动识别用户和 AI 的对话，生成带回合标题的格式化文档）
+#### `html_table_2_csv.py` - HTML表格转CSV工具
+**功能：** 批量将HTML文件中的表格转换为CSV格式
+
+---
+
+#### `ai_studio_2_md.py` - AI Studio聊天记录转换器
+**功能：** 将AI Studio的JSON聊天记录转换为格式化的Markdown文档（自动识别用户和AI的对话，生成带回合标题的格式化文档）
 
 ---
 
@@ -107,13 +133,13 @@ python script.py
 
 ---
 
-### `frames_2_gif.py` - GIF 合成工具
-**功能：** 将多张图片转换为 GIF 动画（不支持透明背景 PNG 序列）
+### `frames_2_gif.py` - GIF合成工具
+**功能：** 将多张图片转换为GIF动画（不支持透明背景PNG序列）
 
 ---
 
-### `gif_2_frames.py` - GIF 分解工具
-**功能：** 将 GIF 分解为单独图片帧
+### `gif_2_frames.py` - GIF分解工具
+**功能：** 将GIF分解为单独图片帧
 
 ---
 
@@ -134,28 +160,16 @@ python script.py
 
 ---
 
-## 配置
-
-### API 密钥配置
-
-复制 `utils/keys.json.example` 为 `utils/keys.json`，填入你的 API 密钥：
-
-```json
-{
-  "GROQ_API_KEY": "your_groq_api_key_here",
-  "CEREBRAS_API_KEY": "your_cerebras_api_key_here",
-  "TELEGRAM_BOT_TOKEN": "your_telegram_bot_token_here",
-  "TELEGRAM_CHAT_ID": "your_telegram_chat_id_here"
-}
-```
-
-### 路径配置
-
-默认输出路径为 `~/Downloads`，可在 `utils/path.py` 中修改 `PATH_DOWNLOADS` 变量。
+### `ezgif_video_2_gif.py` - 视频转GIF工具
+**功能：** 批量将视频转换为GIF并优化大小（使用 ezgif.com 在线服务），默认使用75%缩放比例，可通过 --resize-percentage 0 跳过缩放
 
 ---
 
 ## 附录
+
+### 获取更多帮助
+
+- **核心工具库**：见 `utils/` 目录下的各模块
 
 ### 工具链关系
 
@@ -164,14 +178,15 @@ python script.py
     ↓
 utils（核心函数库）
     ↓
-基础依赖（FFmpeg、Pillow、OpenCV 等）
+基础依赖（FFmpeg、Pillow、Playwright等）
 ```
 
-### 依赖安装
+### 跨平台支持
 
-```bash
-pip install -r requirements.txt
-```
+所有脚本支持以下平台：
+- Windows
+- WSL (Windows Subsystem for Linux)
+- Linux
+- macOS
 
-**外部依赖：**
-- FFmpeg：视频处理脚本需要
+**注意：** WSL环境下默认输出到Windows下载目录，便于文件在Windows中访问。
