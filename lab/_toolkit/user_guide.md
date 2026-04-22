@@ -67,6 +67,13 @@ python script.py
 
 ---
 
+#### `rename_by_csv.py` - CSV批量重命名工具
+**功能：** 根据CSV文件中的映射关系批量重命名文件
+
+**CSV文件格式：** 必须包含 `name` 列，源文件名需要包含数字序号
+
+---
+
 #### `port_cleaner.py` - 港口清理工具
 **功能：** 工作目录文件归拢与过期清理（基于港口思维）
 
@@ -91,6 +98,11 @@ python script.py
 - 源格式：mp4, avi, wmv, mov, flv, m4a
 - 目标格式：mp4（视频转视频）
 - 视频转音频：可转换为 mp3, wav, flac, aac, ogg
+
+---
+
+#### `html_table_2_csv.py` - HTML表格转CSV工具
+**功能：** 批量将HTML文件中的表格转换为CSV格式
 
 ---
 
@@ -145,6 +157,11 @@ python script.py
 - 随机变换：缩放、翻转、变速、色彩调整、色调偏移
 - 使用方式：完整使用或截取片段
 - 支持分类筛选
+
+---
+
+### `ezgif_video_2_gif.py` - 视频转GIF工具
+**功能：** 批量将视频转换为GIF并优化大小（使用 ezgif.com 在线服务），默认使用75%缩放比例，可通过 --resize-percentage 0 跳过缩放
 
 ---
 
