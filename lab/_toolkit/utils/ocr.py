@@ -3,7 +3,7 @@ File: ocr.py
 Project: routine
 Created: 2025-01-15
 Author: Victor Cheng
-Email: your_email@example.com
+Email: hi@victor42.work
 Description: OCR工具函数模块，基于RapidOCR实现图片文字识别
 """
 
@@ -17,7 +17,7 @@ from .basic import *
 try:
     from rapidocr_onnxruntime import RapidOCR
 except ImportError:
-    raise ImportError("请先安装RapidOCR: pip install rapidocr_onnxruntime")
+    RapidOCR = None
 
 
 class OCRError(Exception):
