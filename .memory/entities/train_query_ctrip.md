@@ -1,5 +1,5 @@
 ---
-id: "mem-20260422-railway"
+id: "mem-20260422-train-ctrip"
 type: "entity"
 env: "global"
 confidence: "high"
