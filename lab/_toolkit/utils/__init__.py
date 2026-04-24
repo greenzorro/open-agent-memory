@@ -16,6 +16,7 @@ _submodules = [
     'image',
     'video',
     'spreadsheet',
+    'browser_auto',
     'ocr',
     'api_telegram',
     'api_ai',
