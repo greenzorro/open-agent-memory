@@ -17,6 +17,7 @@ When the User commands `/learn` (or explicitly asks you to remember something gl
 6. **Persist (Environment Logic)**:
    * **IF `env: cloud`**: Execute `git add`, `git commit -m "chore(memory): add [type] - [desc]"`, and `git push origin main`.
    * **IF `env: local`**: Write the file to disk ONLY. Do NOT execute git commands automatically. Notify the User to review.
+   * **CRITICAL — 推送目录约束**: git 操作必须在包含 `.memory/` 目录的仓库根下执行。执行前先验证目标目录下存在 `.memory/`，否则说明当前目录不是记忆系统仓库，推送会污染其他仓库。
 ---
 
 ## 2. YAML Frontmatter Standard
