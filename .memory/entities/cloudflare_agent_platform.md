@@ -122,8 +122,6 @@ PUBLIC_BASE_URL="${CF_PUBLIC_ARTIFACTS_BASE_URL}"
 echo "${PUBLIC_BASE_URL}/{key}"
 ```
 
-不要在开源记忆中写入私有账号、专属 bucket 名、私有域名或真实 Token。
-
 ### 注意事项
 
 - R2 REST API 使用 Bearer Token 认证，不需要单独的 S3 API 密钥
