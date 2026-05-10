@@ -20,4 +20,3 @@ tags: ["git", "sandbox", "physics"]
 1. 任何 Git 操作前：先 `git pull origin main`
 2. 提交前确认当前分支是 `main`
 3. 文件操作时注意当前工作目录与目标路径的关系
-
