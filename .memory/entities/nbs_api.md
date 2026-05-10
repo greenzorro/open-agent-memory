@@ -1,6 +1,6 @@
 ---
 id: "mem-20260411-nbsapi"
-type: "preference"
+type: "entity"
 env: "global"
 confidence: "medium"
 tags: ["NBS", "national-bureau-of-statistics", "cn-stats", "API", "reverse-engineered", "crawler", "数据收集", "宏观数据", "统计数据", "数据源", "国家统计局", "经济指标", "人口数据", "分省数据", "城市数据", "价格指数", "CPI", "逆向接口", "事实标准"]

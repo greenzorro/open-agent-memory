@@ -1,6 +1,6 @@
 ---
 id: "mem-20260411-wbapi"
-type: "preference"
+type: "entity"
 env: "global"
 confidence: "high"
 tags: ["world-bank", "API", "macro-data", "automation", "crawler", "数据收集", "宏观数据", "国际数据", "统计数据", "数据源", "经济指标", "人口数据", "跨国对比", "公开API", "GDP", "CPI"]

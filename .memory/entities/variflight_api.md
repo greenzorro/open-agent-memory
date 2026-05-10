@@ -62,6 +62,3 @@ response = requests.post(
     headers=headers, json=data
 )
 ```
-
----
-*创建: 2026-04-11*
