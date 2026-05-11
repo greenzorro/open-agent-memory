@@ -12,7 +12,6 @@ from typing import List, Union, Optional, Tuple
 from pathlib import Path
 from PIL import Image
 import numpy as np
-from .basic import *
 
 try:
     from rapidocr_onnxruntime import RapidOCR

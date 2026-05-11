@@ -11,7 +11,8 @@ import os
 import csv
 import sys
 import argparse
-from utils import *
+from utils.basic import get_param_value, html_table_2_csv_content
+from utils.path import platform_type, PATH_DOWNLOADS_FROM_WIN, PATH_DOWNLOADS
 
 
 def main():

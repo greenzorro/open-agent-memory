@@ -13,7 +13,7 @@ import logging
 import requests
 import functools
 from pathlib import Path
-from .basic import *
+from .path import PATH_DOWNLOADS
 logger = logging.getLogger(__name__)
 
 class APIError(RuntimeError):

@@ -19,7 +19,12 @@ from typing import Optional
 current_dir = os.path.dirname(__file__)
 sys.path.insert(0, os.path.dirname(current_dir))
 
-from utils import *
+from utils.browser_auto import (
+    WebBrowserContext, wait_for_element, click_element,
+    get_element_attribute, execute_javascript,
+)
+from utils.basic import get_param_value
+from utils.path import PATH_DOWNLOADS
 
 # 配置常量
 EZGIF_URL = "https://ezgif.com/video-to-gif"

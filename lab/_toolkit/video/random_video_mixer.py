@@ -21,7 +21,8 @@ import time
 current_dir = os.path.dirname(__file__)
 sys.path.insert(0, os.path.dirname(current_dir))
 
-from utils import *
+from utils.basic import get_param_value, sanitize_file_name_string
+from utils.path import HOME, PATH_DOWNLOADS, get_platform
 
 TARGET_WIDTH = 1080
 TARGET_HEIGHT = 1920
