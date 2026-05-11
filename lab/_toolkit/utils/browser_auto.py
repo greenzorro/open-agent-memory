@@ -1,4 +1,3 @@
-
 """
 File: browser_auto.py
 Project: routine
@@ -8,10 +7,14 @@ Email: hi@victor42.work
 Description: 基于 Playwright 的通用网页自动化工具库
 """
 
+import os
 import time
 import asyncio
 import functools
+import tempfile
+import webbrowser
 from typing import Optional, List, Any, Dict, Union, Callable
+from .path import platform_type
 try:
     from playwright.async_api import async_playwright, Browser, Page, ElementHandle, TimeoutError as PlaywrightTimeoutError
 except ImportError:
@@ -20,7 +23,6 @@ except ImportError:
     Page = None
     ElementHandle = None
     PlaywrightTimeoutError = None
-from .basic import *
 
 # 默认浏览器启动参数
 DEFAULT_LAUNCH_ARGS = [
@@ -840,9 +842,6 @@ def get_playwright_download_dir() -> str:
     Returns:
         str: Playwright 下载目录路径
     """
-    import os
-    import tempfile
-    
     # 根据平台选择不同的下载目录查找策略
     if platform_type == 'windows':
         # Windows系统
@@ -940,9 +939,6 @@ def batch_open_links_in_browser(links: List[tuple], delay: float = 0.5):
         >>> links = [('小说1', 'https://example.com/1'), ('小说2', 'https://example.com/2')]
         >>> batch_open_links_in_browser(links, delay=0.5)
     """
-    import webbrowser
-    import time
-
     if not links:
         print("[INFO] 没有需要打开的链接")
         return

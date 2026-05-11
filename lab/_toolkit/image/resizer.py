@@ -1,9 +1,9 @@
 """
 File: resizer.py
-Project: open-agent-memory
+Project: routine
 Created: 2024-11-05 06:39:43
 Author: Victor Cheng
-Email: your_email@example.com
+Email: hi@victor42.work
 Description: 将图片调整为指定宽高，支持裁剪和留白模式
 """
 
@@ -14,7 +14,9 @@ import sys
 current_dir = os.path.dirname(__file__)
 sys.path.insert(0, os.path.dirname(current_dir))
 
-from utils import *
+from utils.image import resize_image
+from utils.basic import get_param_value
+from utils.path import get_platform, PATH_DOWNLOADS_FROM_WIN, PATH_DOWNLOADS
 
 
 def main():
@@ -41,7 +43,11 @@ def main():
 
     SRC_FOLDER = get_param_value(args, "source", prompt_text="源文件夹路径")
 
-    default_output = os.path.join(PATH_DOWNLOADS, "Img_resized")
+    platform_type = get_platform()
+    if platform_type == "wsl":
+        default_output = os.path.join(PATH_DOWNLOADS_FROM_WIN, "Img_resized")
+    else:
+        default_output = os.path.join(PATH_DOWNLOADS, "Img_resized")
 
     DST_FOLDER = get_param_value(args, "output", script_default=default_output)
 
@@ -57,18 +63,23 @@ def main():
     if not os.path.exists(DST_FOLDER):
         os.makedirs(DST_FOLDER)
 
+    # 遍历输入文件夹中的图片
     for filename in os.listdir(SRC_FOLDER):
+        # 忽略隐藏文件和文件夹
         if filename.startswith("."):
             continue
         src_format = (os.path.splitext(filename)[1])[1:]
         if src_format in ["jpg", "jpeg", "png", "bmp", "gif"]:
+            # 打开图片并获取原始宽高
             src_path = os.path.join(SRC_FOLDER, filename)
             dst_path = os.path.join(DST_FOLDER, filename)
 
+            # 处理图片
             resize_image(
                 src_path, dst_path, target_width, target_height, mode, bg_color
             )
 
+            # 打印输出结果
             if os.path.exists(dst_path):
                 print(f"{src_path} resized")
             else:

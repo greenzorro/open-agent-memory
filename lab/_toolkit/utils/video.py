@@ -3,7 +3,7 @@ File: video.py
 Project: routine
 Created: 2025-09-23 11:02:19
 Author: Victor Cheng
-Email: your_email@example.com
+Email: hi@victor42.work
 Description: 
 """
 
@@ -11,7 +11,6 @@ import os
 import subprocess
 from pathlib import Path
 from typing import List
-from .basic import *
 
 
 def build_ffmpeg_command(image_files: List[str], 

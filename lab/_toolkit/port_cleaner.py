@@ -13,7 +13,7 @@ import shutil
 import argparse
 from datetime import datetime
 from pathlib import Path
-from utils import *
+from utils.basic import get_param_value
 
 DEFAULT_TTL_DAYS = 7
 

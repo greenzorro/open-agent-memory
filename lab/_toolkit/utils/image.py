@@ -3,7 +3,7 @@ File: image.py
 Project: routine
 Created: 2024-11-05 03:29:57
 Author: Victor Cheng
-Email: your_email@example.com
+Email: hi@victor42.work
 Description:
 """
 
@@ -19,7 +19,7 @@ from pathlib import Path
 from typing import List, Dict, Set, Tuple, Optional
 from dataclasses import dataclass, field
 from collections import defaultdict
-from .basic import *
+from .basic import extract_number_from_filename
 
 
 SUPPORTED_IMAGE_FORMATS = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".tiff"}

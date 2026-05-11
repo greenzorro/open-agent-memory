@@ -1,9 +1,9 @@
 """
 File: gif_2_frames.py
-Project: open-agent-memory
+Project: routine
 Created: 2024-11-05 06:39:43
 Author: Victor Cheng
-Email: your_email@example.com
+Email: hi@victor42.work
 Description: 将GIF转换为图片帧序列
 """
 
@@ -14,7 +14,9 @@ import argparse
 current_dir = os.path.dirname(__file__)
 sys.path.insert(0, os.path.dirname(current_dir))
 
-from utils import *
+from utils.image import gif_2_frames
+from utils.basic import get_param_value
+from utils.path import platform_type, PATH_DOWNLOADS_FROM_WIN, PATH_DOWNLOADS
 
 
 def main():
@@ -36,7 +38,10 @@ def main():
         args, "source", prompt_text="源文件夹路径（包含GIF文件）"
     )
 
-    default_output = os.path.join(PATH_DOWNLOADS, "Converted_frames")
+    if platform_type == "wsl":
+        default_output = os.path.join(PATH_DOWNLOADS_FROM_WIN, "Converted_frames")
+    else:
+        default_output = os.path.join(PATH_DOWNLOADS, "Converted_frames")
     DST_FOLDER = get_param_value(args, "output", script_default=default_output)
 
     if not os.path.exists(SRC_FOLDER):

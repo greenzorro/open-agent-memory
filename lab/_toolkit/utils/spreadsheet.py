@@ -3,14 +3,14 @@ File: spreadsheet.py
 Project: routine
 Created: 2025-09-22 10:44:02
 Author: Victor Cheng
-Email: your_email@example.com
+Email: hi@victor42.work
 Description: 
 """
 
 import os
 import pandas as pd
 from typing import Optional, Union, List
-from .basic import *
+from .basic import html_table_2_csv_content
 
 
 # ==================== 内部辅助函数 ====================
@@ -399,8 +399,6 @@ def get_latest_excel_file(directory: str) -> Optional[str]:
     Returns:
         Optional[str]: 最新文件路径，如未找到则返回None
     """
-    import os
-    
     if not os.path.exists(directory):
         return None
 
@@ -434,8 +432,6 @@ def is_likely_excel_file(filepath: str) -> bool:
     Returns:
         bool: 是否可能是Excel文件
     """
-    import os
-    
     try:
         # 检查文件大小（Excel文件通常至少有几千字节）
         if os.path.getsize(filepath) < 100:
