@@ -22,7 +22,7 @@ Cloudflare 账号可为 AI Agent 提供云端浏览器和对象存储能力。�
 | **公开访问域名** | 可选，自定义绑定到 R2 bucket 的公开域名 |
 | **计划** | Workers Free 即可使用 |
 
-> **部署说明**：使用前请将 Token、Account ID、bucket 名和公开域名配置为环境变量 `CF_TOKEN`、`CF_ACCOUNT_ID`、`CF_R2_BUCKET` 和 `CF_PUBLIC_ARTIFACTS_BASE_URL`，或在调用时直接替换。
+> **部署说明**：使用前请将 Token、Account ID、bucket 名 和 公开域名配置为环境变量 `CF_TOKEN`、`CF_ACCOUNT_ID`、`CF_R2_BUCKET` 和 `CF_PUBLIC_ARTIFACTS_BASE_URL`，或在调用时直接替换。
 
 ## 通用调用方式
 
@@ -37,7 +37,7 @@ curl -s -H "Authorization: Bearer ${CF_TOKEN}" \
 
 ## 能力一：Browser Run（云端无头浏览器）
 
-Browser Run 在 Cloudflare 全球边缘网络运行无头 Chrome。核心价值：**Cloudflare 边缘 IP 不会被常见反爬机制封禁**，可作为沙盒本地浏览器被拦截时的备用通道。
+在 Cloudflare 全球边缘网络运行无头 Chrome。核心价值：**Cloudflare 边缘 IP 不会被常见反爬机制封禁**，可作为沙盒本地浏览器被拦截时的备用通道。
 
 ### Quick Actions（单次请求，无需管理会话）
 
@@ -124,6 +124,6 @@ echo "${PUBLIC_BASE_URL}/{key}"
 
 ### 注意事项
 
-- R2 REST API 使用 Bearer Token 认证，不需要单独的 S3 API 密钥
 - Token 需要授予对应 bucket 的读写权限
+- R2 REST API 使用 Bearer Token 认证，不需要单独的 S3 API 密钥
 - Free 计划限制：10GB 存储、每月 1000 万次 Class A 操作（写入）、每月 1000 万次 Class B 操作（读取/列出）
