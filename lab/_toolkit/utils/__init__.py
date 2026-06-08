@@ -15,6 +15,7 @@ _submodules = [
     'basic',
     'image',
     'video',
+    'music',
     'spreadsheet',
     'browser_auto',
     'ocr',
@@ -24,11 +25,27 @@ _submodules = [
 
 _skipped = []
 
+
+def _is_missing_optional_dependency(exc):
+    """Return True only for missing third-party modules during bulk import."""
+    if not isinstance(exc, ModuleNotFoundError) or not exc.name:
+        return False
+
+    missing_root = exc.name.split('.')[0]
+    package_root = __name__.split('.')[0]
+    if missing_root == package_root:
+        return False
+    if missing_root in _submodules:
+        return False
+    return True
+
 for _mod_name in _submodules:
     try:
         _mod = importlib.import_module(f'.{_mod_name}', __name__)
-    except Exception:
-        _skipped.append(_mod_name)
+    except ModuleNotFoundError as exc:
+        if not _is_missing_optional_dependency(exc):
+            raise
+        _skipped.append(f"{_mod_name} ({exc.name})")
         continue
     for _name in getattr(_mod, '__all__', [n for n in vars(_mod) if not n.startswith('_')]):
         globals()[_name] = getattr(_mod, _name)

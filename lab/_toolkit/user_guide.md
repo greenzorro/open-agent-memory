@@ -83,6 +83,7 @@ python script.py
 
 #### `convertor.py` - 通用格式转换器
 **功能：** 批量转换文件格式（基于ffmpeg和Pillow）
+**输入：** 支持单个文件或文件夹；文件夹模式会递归处理
 
 **支持的格式转换：**
 
@@ -91,23 +92,26 @@ python script.py
 - 目标格式：上述格式任意互转
 
 **音频格式转换：**
-- 源格式：mp3, wav, flac, aac, ogg
-- 目标格式：统一转换为 mp3
+- 源格式：mp3, wav, flac, aac, ogg, m4a, opus
+- 目标格式：mp3, wav, flac, aac, ogg, m4a, opus
 
 **视频格式转换：**
-- 源格式：mp4, avi, wmv, mov, flv, m4a
-- 目标格式：mp4（视频转视频）
-- 视频转音频：可转换为 mp3, wav, flac, aac, ogg
+- 源格式：mp4, avi, wmv, mov, flv, m4a, mkv, webm, m4v
+- 目标格式：mp4, mov, m4v, mkv, avi, webm, flv, wmv
+- 视频转音频：可转换为 mp3, wav, flac, aac, ogg, m4a, opus
+- 视频转GIF：可转换为 gif 动图（fps=15, 宽度480px, Lanczos缩放）
 
 ---
 
 #### `html_table_2_csv.py` - HTML表格转CSV工具
 **功能：** 批量将HTML文件中的表格转换为CSV格式
+**输入：** 支持单个 HTML 文件或包含 HTML 文件的文件夹
 
 ---
 
 #### `ai_studio_2_md.py` - AI Studio聊天记录转换器
 **功能：** 将AI Studio的JSON聊天记录转换为格式化的Markdown文档（自动识别用户和AI的对话，生成带回合标题的格式化文档）
+**输入：** 支持单个 JSON 文件或包含 JSON 文件的文件夹；文件夹模式会递归处理
 
 ---
 
@@ -115,16 +119,19 @@ python script.py
 
 ### `resizer.py` - 图片尺寸调整工具
 **功能：** 智能调整图片尺寸，支持裁剪和留白模式
+**输入：** 支持单张图片或图片文件夹
 
 ---
 
 ### `scaler.py` - 图片比例缩放工具
 **功能：** 按比例缩放图片，限制在指定尺寸内
+**输入：** 支持单张图片或图片文件夹
 
 ---
 
 ### `avatar_cropper.py` - 批量头像裁剪工具
 **功能：** 批量将包含人脸的照片裁剪为指定尺寸的头像（支持圆形或方形）
+**输入：** 支持单张图片或图片文件夹
 
 ---
 
@@ -140,6 +147,7 @@ python script.py
 
 ### `gif_2_frames.py` - GIF分解工具
 **功能：** 将GIF分解为单独图片帧
+**输入：** 支持单个 GIF 文件或包含 GIF 文件的文件夹
 
 ---
 
@@ -161,7 +169,7 @@ python script.py
 ---
 
 ### `ezgif_video_2_gif.py` - 视频转GIF工具
-**功能：** 批量将视频转换为GIF并优化大小（使用 ezgif.com 在线服务），默认使用75%缩放比例，可通过 --resize-percentage 0 跳过缩放
+**功能：** 批量将视频转换为GIF并优化大小（使用 ezgif.com 在线服务），默认缩放比例为75%
 
 ---
 
