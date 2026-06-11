@@ -19,6 +19,7 @@ _toolkit/
 ├── 根目录脚本/      - 文件管理、数据转换工具
 ├── image/          - 图像处理工具集
 ├── video/          - 视频处理工具集
+├── music/          - 音乐处理工具集
 ├── tasks/          - 任务定义文档
 ├── utils/          - 核心工具函数库
 ├── requirements.txt - Python依赖
@@ -170,6 +171,18 @@ python script.py
 
 ### `ezgif_video_2_gif.py` - 视频转GIF工具
 **功能：** 批量将视频转换为GIF并优化大小（使用 ezgif.com 在线服务），默认缩放比例为75%
+
+---
+
+## 音乐处理工具（music/）
+
+### `music_list_2_txt.py` - 歌单转换工具
+**功能：** HTML歌单转换为TXT导入格式（用于跨平台歌单迁移）
+
+---
+
+### `Netease_free.py` - 网易云免费音乐下载工具
+**功能：** 从网易云音乐歌单下载可直接获取的免费歌曲
 
 ---
 

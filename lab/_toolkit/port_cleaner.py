@@ -11,6 +11,8 @@ import sys
 import time
 import shutil
 import argparse
+import errno
+import os
 from datetime import datetime
 from pathlib import Path
 from utils.basic import get_param_value
@@ -54,6 +56,39 @@ def collect_from_sources(workdir: Path, sources: list[str], exclude_files: set) 
     return targets
 
 
+def _copy_file_then_unlink(filepath: Path, dest: Path) -> tuple[str, str]:
+    """Copy a file to dest, then remove source if the source filesystem allows it."""
+    tmp_dest = dest.with_name(f".{dest.name}.tmp-{os.getpid()}")
+    try:
+        shutil.copy2(str(filepath), str(tmp_dest))
+        os.replace(str(tmp_dest), str(dest))
+    except Exception:
+        if tmp_dest.exists():
+            tmp_dest.unlink()
+        raise
+
+    try:
+        filepath.unlink()
+        return "Moved", ""
+    except (PermissionError, OSError) as exc:
+        if isinstance(exc, FileNotFoundError):
+            return "Moved", ""
+        return "Copied", " (copy-only, source preserved)"
+
+
+def _move_file_compatible(filepath: Path, dest: Path) -> tuple[str, str]:
+    """Move a file, degrading to copy-only when a read-only source cannot be removed."""
+    try:
+        filepath.rename(dest)
+        return "Moved", ""
+    except OSError as exc:
+        fallback_errnos = {errno.EXDEV, errno.EACCES, errno.EPERM, errno.EROFS}
+        if exc.errno not in fallback_errnos:
+            raise
+
+    return _copy_file_then_unlink(filepath, dest)
+
+
 def move_to_port(filepath: Path, port: Path, dry_run: bool = False):
     """Move a file or directory to port/, handling name conflicts by appending counter."""
     dest = port / filepath.name
@@ -65,13 +100,18 @@ def move_to_port(filepath: Path, port: Path, dry_run: bool = False):
             dest = port / f"{stem}_{counter}{suffix}"
             counter += 1
 
-    if not dry_run:
+    action_suffix = ""
+    if dry_run:
+        action = "Would move"
+    elif filepath.is_dir():
         shutil.move(str(filepath), str(dest))
+        action = "Moved"
+    else:
+        action, action_suffix = _move_file_compatible(filepath, dest)
 
     # 日志输出
-    action = "Would move" if dry_run else "Moved"
     prefix = "Dir" if filepath.is_dir() else "File"
-    print(f"[{_ts()}] {prefix}[{filepath.name}] {action}: {dest.name}")
+    print(f"[{_ts()}] {prefix}[{filepath.name}] {action}: {dest.name}{action_suffix}")
 
 
 def purge_old_files(port: Path, ttl_days: int, dry_run: bool = False):
