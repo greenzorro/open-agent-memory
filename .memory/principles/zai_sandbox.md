@@ -36,7 +36,7 @@ tags: ["git", "repo", "sandbox", "zai", "分离", "workspace", "持久化", "架
 
 ## 持久化原理
 
-`${PATH}` 是**唯一可靠的持久存储区域**，沙盒重置时该目录不会丢失。但其持久化机制有严格前提：
+`/home/z/my-project/` 是**唯一可靠的持久存储区域**，沙盒重置时该目录不会丢失。但其持久化机制有严格前提：
 
 ### 核心机制：repo.tar
 
@@ -68,8 +68,8 @@ tags: ["git", "repo", "sandbox", "zai", "分离", "workspace", "持久化", "架
 
 | 仓库 | 路径 | 远程 | 允许提交的内容 |
 |------|------|------|----------------|
-| 工作目录 | `${PATH}` | 无（纯本地） | `backup/`、`projects/`、临时数据、实验产出；projects/ 下可有独立 git 仓库 |
-| 记忆系统 | `${PATH}` | `greenzorro/agent-workspace` | 整个仓库（`.memory/`、`lab/`、`README.md` 等） |
+| 工作目录 | `/home/z/my-project/` | 无（纯本地） | `backup/`、`projects/`、临时数据、实验产出；projects/ 下可有独立 git 仓库 |
+| 记忆系统 | `/home/z/my-project/agent-workspace/` | `greenzorro/agent-workspace` | 整个仓库（`.memory/`、`lab/`、`README.md` 等） |
 
 ## 执行红线
 
