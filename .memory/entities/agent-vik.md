@@ -21,7 +21,7 @@ Agent Vik 是运行在 Serverless 计算存储分离架构上的自治 AI Agent�
 | **身份来源** | 由 Victor42 在初始化手册中命名 |
 | **邮箱** | `agent-vik@victor42.work` (Cloudflare 转发至 Victor42) |
 | **Git 身份** | `agent-vik@victor42.work` |
-| **GitHub 账号** | `agent-vik` |
+| **GitHub 账号** | `agent-vik` (独立账户) |
 | **GitHub Token** | `${GH_TOKEN}` (Classic, repo scope, 无过期) |
 | **通信机制** | 邮件 → Victor42 接收 → 传达给 Vik (单向) |
 | **项目仓库目录** | `~/vik-projects/{repo-name}` — 沙盒环境下从 agent-vik 账号 clone 项目的统一位置 |

@@ -16,19 +16,19 @@ Cloudflare 账号可为 AI Agent 提供云端浏览器和对象存储能力。�
 
 | 属性 | 说明 |
 |------|------|
-| **API Token** | Cloudflare API Token（需自行申请，赋予所需服务权限） |
-| **Account ID** | Cloudflare Account ID（在 Dashboard 中查看） |
-| **R2 Bucket** | 用于 artifacts 或文件中转的 R2 bucket 名称 |
-| **公开访问域名** | 可选，自定义绑定到 R2 bucket 的公开域名 |
-| **计划** | Workers Free 即可使用 |
+| **API Token** | `${CF_TOKEN}` |
+| **Account ID** | `${CF_ACCOUNT_ID}` |
+| **R2 Bucket** | `${CF_R2_BUCKET}` |
+| **公开访问域名** | `${CF_PUBLIC_ARTIFACTS_BASE_URL}` |
+| **计划** | Workers Free |
 
 > **部署说明**：使用前请将 Token、Account ID、bucket 名 和 公开域名配置为环境变量 `CF_TOKEN`、`CF_ACCOUNT_ID`、`CF_R2_BUCKET` 和 `CF_PUBLIC_ARTIFACTS_BASE_URL`，或在调用时直接替换。
 
 ## 通用调用方式
 
 ```bash
-ACCOUNT_ID="${CF_ACCOUNT_ID}"    # 替换为你的 Cloudflare Account ID
-CF_TOKEN="${CF_TOKEN}"            # 替换为你的 Cloudflare API Token
+ACCOUNT_ID="${CF_ACCOUNT_ID}"
+CF_TOKEN="${CF_TOKEN}"
 
 curl -s -H "Authorization: Bearer ${CF_TOKEN}" \
   -H "Content-Type: application/json" \
@@ -69,7 +69,7 @@ curl -s -H "Authorization: Bearer ${CF_TOKEN}" \
 
 ## 能力二：R2 对象存储
 
-通过 REST API 对 R2 bucket 进行对象的读写和删除。可用于文件中转、产物暂存等场景。
+通过 REST API 对 `${CF_R2_BUCKET}` bucket 进行对象的读写和删除。可用于文件中转、产物暂存等场景。
 
 ### 调用方式
 
@@ -91,7 +91,7 @@ GET /accounts/${ACCOUNT_ID}/r2/buckets/${BUCKET}/objects
 DELETE /accounts/${ACCOUNT_ID}/r2/buckets/${BUCKET}/objects/{key}
 ```
 
-上传非 JSON 文件时，必须通过 `Content-Type` 请求头指定正确的 MIME 类型，否则 R2 可能默认使用错误类型，导致浏览器下载而非渲染。常见类型：
+上传非 JSON 文件时，必须通过 `Content-Type` 请求头指定正确的 MIME 类型，否则 R2 会默认使用错误类型，导致浏览器下载而非渲染。常见类型：
 
 - HTML：`text/html; charset=utf-8`
 - PDF：`application/pdf`
@@ -102,10 +102,6 @@ DELETE /accounts/${ACCOUNT_ID}/r2/buckets/${BUCKET}/objects/{key}
 示例：
 
 ```bash
-ACCOUNT_ID="${CF_ACCOUNT_ID}"
-CF_TOKEN="${CF_TOKEN}"
-BUCKET="${CF_R2_BUCKET}"
-
 curl -s -X PUT \
   -H "Authorization: Bearer ${CF_TOKEN}" \
   -H "Content-Type: text/html; charset=utf-8" \
@@ -115,7 +111,7 @@ curl -s -X PUT \
 
 ### 公开访问域名
 
-如果 bucket 已绑定自定义公开域名，优先使用该域名生成公开链接：
+优先使用自定义公开域名生成链接，不要使用 workers.dev 子域名：
 
 ```bash
 PUBLIC_BASE_URL="${CF_PUBLIC_ARTIFACTS_BASE_URL}"
@@ -124,6 +120,6 @@ echo "${PUBLIC_BASE_URL}/{key}"
 
 ### 注意事项
 
-- Token 需要授予对应 bucket 的读写权限
+- Token 权限应仅限配置的 artifacts bucket，不要授予同账户下其他 bucket 的操作权限
 - R2 REST API 使用 Bearer Token 认证，不需要单独的 S3 API 密钥
 - Free 计划限制：10GB 存储、每月 1000 万次 Class A 操作（写入）、每月 1000 万次 Class B 操作（读取/列出）

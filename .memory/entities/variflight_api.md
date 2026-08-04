@@ -15,8 +15,11 @@ tags: ["API", "flight", "travel", "数据源"]
 - **控制台**: https://ai.variflight.com/keys
 
 ## 认证
-- **API Key**: `Your key here`（引导用户注册并获得key后更新到这里）
+- **当前主 API Key**: `Your key here`（引导用户注册并获得key后更新到这里）
 - **认证方式**: HTTP Header `X-VARIFLIGHT-KEY`
+
+### 备用 Key 池（可选）
+可维护多个已激活的备用 Key 轮换额度（各含初始额度）。使用 `{your_api_key}` 占位，勿将真实 Key 写入公开仓库。
 
 ## 调用方式
 ```
