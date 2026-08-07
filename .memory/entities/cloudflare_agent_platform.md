@@ -3,7 +3,7 @@ id: "mem-20260417-cfap"
 type: "entity"
 env: "global"
 confidence: "high"
-tags: ["cloudflare", "api", "cloud-platform", "browser-run", "workers", "r2", "object-storage", "ai-agent", "anti-crawl"]
+tags: ["cloudflare", "api", "cloud-platform", "browser-run", "browser-rendering", "kitesurf", "chromium", "workers", "r2", "object-storage", "ai-agent", "anti-crawl"]
 ---
 
 # Cloudflare — AI Agent 云端平台
@@ -37,26 +37,45 @@ curl -s -H "Authorization: Bearer ${CF_TOKEN}" \
 
 ## 能力一：Browser Run（云端无头浏览器）
 
-在 Cloudflare 全球边缘网络运行无头 Chrome。核心价值：**Cloudflare 边缘 IP 不会被常见反爬机制封禁**，可作为沙盒本地浏览器被拦截时的备用通道。
+在 Cloudflare 全球边缘运行无头浏览器。核心价值：**边缘 IP 不易被常见反爬封禁**，可作为沙盒本地浏览器被拦截时的备用通道。
+
+### 引擎
+
+| 引擎 | 选用方式 | 定位 |
+|------|----------|------|
+| **Chromium** | 默认；不传 `browser` 参数 | 全功能无头 Chrome，兼容性最好 |
+| **Kitesurf** | CDP / Quick Actions 加 `browser=kitesurf` | Agent 优先；跑在 Workers V8 isolate；CPU/内存约省 3–7×，墙钟略慢 |
+
+选用规则：
+
+- 需要视频、WebGL、真实 TLS 指纹过 bot、或长登录态时，用 Chromium。
+- 短任务抽 HTML / 截图 / PDF、可接受非像素级渲染、要压并发成本时，用 Kitesurf。
+- 站点兼容性以实测为准：https://kitesurf.cloudflare.app/
+
+别名与触发：`Browser Run`、`Browser Rendering`、`Kitesurf`、`browser=kitesurf`。
 
 ### Quick Actions（单次请求，无需管理会话）
 
+API 前缀：`/browser-run/`。
+
 | 端点 | 功能 |
 |------|------|
-| `/browser-rendering/content` | 获取页面 HTML |
-| `/browser-rendering/screenshot` | 页面截图 (PNG) |
-| `/browser-rendering/pdf` | 页面转 PDF |
-| `/browser-rendering/markdown` | 页面转 Markdown |
-| `/browser-rendering/json` | AI 结构化数据提取 |
-| `/browser-rendering/links` | 提取页面链接 |
-| `/browser-rendering/snapshot` | 页面快照 |
-| `/browser-rendering/scrape` | CSS 选择器元素提取 |
-| `/browser-rendering/crawl` | 整站爬取 |
+| `/browser-run/content` | 获取页面 HTML |
+| `/browser-run/screenshot` | 页面截图 (PNG) |
+| `/browser-run/pdf` | 页面转 PDF |
+| `/browser-run/markdown` | 页面转 Markdown |
+| `/browser-run/json` | AI 结构化数据提取 |
+| `/browser-run/links` | 提取页面链接 |
+| `/browser-run/snapshot` | 页面快照 |
+| `/browser-run/scrape` | CSS 选择器元素提取 |
+| `/browser-run/crawl` | 整站爬取 |
+
+多步交互（点击、等待、跳转）使用 Browser Sessions（Puppeteer / Playwright / CDP）。Chromium 与 Kitesurf 均兼容 CDP。
 
 ### 已知局限
 
-- Quick Actions 是单次请求模式，不会自动跟随多次跳转
-- 要实现多步交互（点击、等待、跳转），需要通过 Puppeteer/Playwright 接入 Browser Session（尚未验证）
+- Quick Actions 为单次请求，不自动跟随多次跳转
+- Kitesurf 不适用于：视频、WebGL、TLS 指纹 bot 挑战、需持久态的长认证会话
 
 ### Free 计划限制
 

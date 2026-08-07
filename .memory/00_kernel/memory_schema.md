@@ -98,25 +98,31 @@ When executing `/learn`, prioritize extracting rules from **actual failures obse
 
 ### 4.3 Plug Rationalization Loopholes
 
-Agents are smart enough to find seemingly reasonable excuses to violate rules under pressure. Discipline-type memories (`principle`, `correction`) MUST proactively block known rationalization paths:
+Agents can invent seemingly reasonable excuses to violate rules under pressure. For **high-stakes prohibitions** (security, irreversible data loss, credential leakage, scope-isolation bypass), prefer blocking known rationalization paths when writing or revising the memory:
 
-- **Explicitly list** a "common excuse → rebuttal" table
-- Include a foundational statement like "violating the letter of the rule IS violating the spirit" to block "I followed the spirit" excuses
-- For every "do not do X," append a specific list of "nor may you bypass this via the following methods"
+- List "common excuse → rebuttal" where those excuses are already known from real incidents
+- A foundational line such as "violating the letter of the rule IS violating the spirit" can block "I followed the spirit" excuses
+- For every "do not do X," consider listing concrete bypass methods that are also forbidden
+
+This is **not mandatory on every** `principle` / `correction`. Most operating rules work as direct procedures without an excuse table. Do not invent hypothetical loopholes to fill a template — that contradicts §4.2. Add plugs when a real rationalization failure has been observed, or when the rule's blast radius is high enough that known bypasses are already clear.
 
 ## 5. Body Content Formatting
 
 * **Keep it MECE**: Mutually Exclusive, Collectively Exhaustive.
 * **Be Concise**: Use bullet points. Do not write chatty introductions or conclusions. Treat it like a database record.
 * **No Update History**: NEVER append changelogs, update logs, or revision history sections (e.g., "## 更新历史", "## Changelog", "## 变更记录") to memory files. A memory file is a snapshot of current state, not an audit trail. Git already provides complete version history.
+* **Write as Current Truth**: Whether creating or editing a memory, the body must read as if it had always been written that way. State only the present rule/fact. Do not leave modification traces in prose.
+  * Forbidden voice: "原名…", "以前叫…", "历史文档可能仍写…", "现已改为…", "本次更新…", "尚待验证后提升…", "以实跑为准（相对旧记忆）", before/after contrasts, or inline callouts that a passage was revised.
+  * Forbidden artifacts: struck-through old text, "NEW:" / "UPDATED:" markers, migration footnotes, or anti-examples that exist only to document a past mistake rather than to define the rule.
+  * When a fact changes, rewrite the affected sentences in place; delete obsolete wording. Do not narrate the change.
 
 ## 6. Path Abstraction Standards (Cross-Platform Portability)
 
-To ensure memories work across Windows, Linux, and MacOS, you are **STRICTLY FORBIDDEN** from writing hardcoded absolute paths in memory content.
+Hardcoded host absolute paths in memory content are forbidden **except** where listed below.
 
-**The Mapping Rule:**
+**Default Mapping Rule** (cross-machine / `env: global` content that refers to the User's shared filesystem):
 
-Refer to the User's infrastructure (`routine/utils/path.py`) and use these variables instead of raw paths:
+Refer to `routine/utils/path.py` and use these variables instead of raw paths:
 
 - `PATH_DOWNLOADS`: Instead of `/Users/{user}/Downloads` or `D:\Downloads`
 - `BASE_PATH_CODING`: Instead of `/Users/{user}/.../coding`
@@ -128,3 +134,9 @@ Refer to the User's infrastructure (`routine/utils/path.py`) and use these varia
 
 - ❌ Bad: "The dataset is in `/Users/victor/Downloads/temp`"
 - ✅ Good: "The dataset is in `PATH_DOWNLOADS/temp`"
+
+**Exceptions (absolute paths allowed):**
+
+- **`env: cloud` (or other) sandbox-physics memories** that document a specific remote environment's real layout (e.g. Autoclaw `/root/...`, Z.ai `/home/z/...`). Those paths *are* the fact being recorded; do not force `path.py` variables that do not exist in that environment.
+- **Teaching counterexamples** inside this schema (or similar docs) that show the forbidden form on purpose.
+- **Links inside `agent-workspace`**: use repo-relative paths from the repository root (e.g. `.memory/principles/foo.md`), not `BASE_PATH_CODING/...` and not `file://` host absolute URLs. Cloud and local checkouts both resolve from the repo root.
