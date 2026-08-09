@@ -61,7 +61,7 @@ tags: ["autoclaw", "sandbox", "沙盒", "git", "workspace", "限制", "平台特
 ## 子 Agent 使用规则
 
 - 子 Agent 并发易触发模型/token 额度限制
-- 短路径任务应由主线程直接执行
+- 关键路径任务应由主线程直接执行
 - 子 Agent 失败后要有主线程兜底方案
 
 ## 执行红线
