@@ -40,7 +40,6 @@ try:
         KIMI_API_KEY = keys.get('KIMI_API_KEY', '')
         OPENROUTER_API_KEY = keys.get('OPENROUTER_API_KEY', '')
         GROQ_API_KEY = keys.get('GROQ_API_KEY', '')
-        CEREBRAS_API_KEY = keys.get('CEREBRAS_API_KEY', '')
         REPLICATE_API_TOKEN = keys.get('REPLICATE_API_TOKEN')
         if REPLICATE_API_TOKEN:
             os.environ['REPLICATE_API_TOKEN'] = REPLICATE_API_TOKEN
@@ -50,7 +49,6 @@ except Exception:
     KIMI_API_KEY = ''
     OPENROUTER_API_KEY = ''
     GROQ_API_KEY = ''
-    CEREBRAS_API_KEY = ''
     REPLICATE_API_TOKEN = None
 
 def retry_with_backoff(max_retries=3, base_delay=3, rate_limit_delay=60, retry_on_network=True, retry_on_rate_limit=True):
@@ -122,48 +120,6 @@ def ask_groq(prompt, model='openai/gpt-oss-120b', delay=0):
     url = 'https://api.groq.com/openai/v1/chat/completions'
     request_data = {'model': model, 'messages': [{'role': 'user', 'content': prompt}], 'max_tokens': 4096, 'temperature': 0.7}
     headers = {'Authorization': f'Bearer {GROQ_API_KEY}', 'Content-Type': 'application/json'}
-    try:
-        response = requests.post(url, json=request_data, headers=headers, timeout=60)
-    except requests.RequestException as e:
-        raise NetworkError(f'网络请求失败: {e}') from e
-    if response.status_code != 200:
-        if response.status_code == 429:
-            raise RateLimitError(f'API 请求失败，状态码: {response.status_code}, 响应: {response.text}')
-        raise APIError(f'API 请求失败，状态码: {response.status_code}, 响应: {response.text}')
-    response_data = response.json()
-    reply = response_data.get('choices', [{}])[0].get('message', {}).get('content', '')
-    if reply:
-        return reply
-    else:
-        raise InvalidResponseError('无法从 API 响应中提取回复内容')
-
-@retry_with_backoff(max_retries=3, base_delay=3, rate_limit_delay=60)
-def ask_cerebras(prompt, model='gpt-oss-120b', delay=0):
-    """调用 Cerebras API 获取 AI 回复
-
-    参数:
-        prompt (str): 要发送的提示内容
-        model (str): 使用的模型名称，默认为 'gpt-oss-120b'
-        delay (int): 请求间隔秒数，默认为 0
-
-    返回:
-        str: AI 的回复内容
-
-    异常:
-        ValueError: 当 API 密钥缺失或提示内容无效时
-        NetworkError: 当网络请求失败时（会自动重试）
-        RateLimitError: 当API返回429状态码时（会自动重试）
-        InvalidResponseError: 当无法从API响应中提取有效内容时（不重试）
-    """
-    if not prompt or not isinstance(prompt, str) or (not prompt.strip()):
-        raise ValueError('prompt must be a non-empty string')
-    if not CEREBRAS_API_KEY:
-        raise RuntimeError('CEREBRAS_API_KEY is not configured in keys.json')
-    if delay > 0:
-        time.sleep(delay)
-    url = 'https://api.cerebras.ai/v1/chat/completions'
-    request_data = {'model': model, 'messages': [{'role': 'user', 'content': prompt}], 'max_tokens': 8192, 'temperature': 0.7, 'top_p': 0.95, 'stream': False}
-    headers = {'Authorization': f'Bearer {CEREBRAS_API_KEY}', 'Content-Type': 'application/json', 'User-Agent': 'Python/CerebrasSDK'}
     try:
         response = requests.post(url, json=request_data, headers=headers, timeout=60)
     except requests.RequestException as e:

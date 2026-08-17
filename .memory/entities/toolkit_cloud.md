@@ -17,7 +17,7 @@ tags: ["toolkit", "sanitized", "routine"]
 - 通过 GitHub 同步到云端
 
 ## 能力边界
-**包含**：基础工具、图像处理、视频处理、Telegram API、Groq/Cerebras AI
+**包含**：基础工具、图像处理、视频处理、Telegram API、Groq AI
 **排除**：需要敏感 Key 的服务
 
 ## 用户指南
