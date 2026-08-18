@@ -207,6 +207,40 @@ def html_table_2_csv_content(html_content):
     return csv_content
 
 
+def plan_flattened_destinations(source_paths, dst_path, dst_extension=None):
+    """为扁平化输出生成无重名覆盖的确定性目标路径。"""
+    used_names = set()
+    plan = []
+
+    for source_path in source_paths:
+        filename = os.path.basename(source_path)
+        if dst_extension is not None:
+            stem = os.path.splitext(filename)[0]
+            filename = f"{stem}.{dst_extension.lower().lstrip('.')}"
+
+        stem, extension = os.path.splitext(filename)
+        candidate = filename
+        suffix = 2
+        while candidate.casefold() in used_names:
+            candidate = f"{stem}_{suffix}{extension}"
+            suffix += 1
+
+        used_names.add(candidate.casefold())
+        plan.append((source_path, os.path.join(dst_path, candidate)))
+
+    return plan
+
+
+def plan_folder_ungroup(src_path, dst_path):
+    """列出文件夹解组将执行的复制计划。"""
+    source_files = []
+    for root, dirs, files in os.walk(src_path):
+        dirs.sort()
+        for filename in sorted(files):
+            source_files.append(os.path.join(root, filename))
+    return plan_flattened_destinations(source_files, dst_path)
+
+
 def folder_ungroup(src_path, dst_path):
     """把文件里的文件夹拆开，取出全部文件
 
@@ -216,11 +250,8 @@ def folder_ungroup(src_path, dst_path):
     if not os.path.exists(dst_path):
         os.makedirs(dst_path)
 
-    for root, dirs, files in os.walk(src_path):
-        for file in files:
-            src_file_path = os.path.join(root, file)
-            dst_file_path = os.path.join(dst_path, file)
-            shutil.copy(src_file_path, dst_file_path)
+    for src_file_path, dst_file_path in plan_folder_ungroup(src_path, dst_path):
+        shutil.copy(src_file_path, dst_file_path)
 
 
 def open_installer(file_path):
@@ -276,34 +307,29 @@ def unarchive_file(file_path):
 
     # 获取文件名和扩展名
     file_name, file_ext = os.path.splitext(file_path)
+    file_ext = file_ext.lower()
+    if file_ext not in {'.zip', '.rar'}:
+        raise ValueError(f'不支持的压缩文件格式: {file_ext}')
 
-    # 如果是windows系统，则使用Windows自带的压缩解压工具解压缩文件
-    if os.name == 'nt':
-
-        # 如果文件扩展名是zip，则使用zipfile模块解压缩文件
+    # Windows、Linux 与 WSL 使用 Python 解压库，避免依赖桌面命令。
+    if os.name == 'nt' or platform_type in {'linux', 'wsl'}:
         if file_ext == '.zip':
             with zipfile.ZipFile(file_path, 'r') as zip_ref:
                 zip_ref.extractall(file_name)
-        # 如果文件扩展名是rar，则使用rarfile模块解压缩文件
-        elif file_ext == '.rar':
+        else:
             with rarfile.RarFile(file_path, 'r') as rar_ref:
                 rar_ref.extractall(file_name)
-        else:
-            print('Unsupported file format')
 
-    # 如果是mac系统，则使用The Unarchiver打开文件
-    elif os.name == 'posix':
-
-        # 如果文件扩展名是zip，则使用ditto解压缩文件（支持中文文件名编码）
+    # macOS 的 ditto 对中文文件名编码兼容更好；RAR 交给 The Unarchiver。
+    elif platform_type == 'mac':
         if file_ext == '.zip':
             cmd = ['ditto', '-x', '-k', file_path, file_name]
-            subprocess.run(cmd)
-        # 如果文件扩展名是rar，则使用The Unarchiver解压缩文件
-        elif file_ext == '.rar':
-            cmd = ['open', '-a', 'The Unarchiver', file_path]
-            subprocess.run(cmd)
         else:
-            print('Unsupported file format')
+            cmd = ['open', '-a', 'The Unarchiver', file_path]
+        subprocess.run(cmd, check=True)
+
+    else:
+        raise RuntimeError(f'不支持的操作系统: {platform_type}')
 
 
 def rename_by_name_list(name_list, src_folder, dst_folder):
@@ -355,7 +381,8 @@ def rename_by_name_list(name_list, src_folder, dst_folder):
 
 VIDEO_FORMATS = {'mp4', 'avi', 'wmv', 'mov', 'flv', 'm4a', 'mkv', 'webm', 'm4v'}
 AUDIO_FORMATS = {'mp3', 'wav', 'flac', 'aac', 'ogg', 'm4a', 'opus'}
-IMAGE_FORMATS = {'jpg', 'jpeg', 'png', 'bmp', 'gif', 'tiff', 'webp', 'avif'}
+IMAGE_FORMATS = {'jpg', 'jpeg', 'jfif', 'png', 'bmp', 'gif', 'tiff', 'webp', 'avif'}
+JPEG_FORMATS = {'jpg', 'jpeg', 'jfif'}
 
 VIDEO_CODEC_OPTIONS = {
     'mp4': ['-c:v', 'libx264', '-preset', 'slow', '-crf', '22', '-c:a', 'aac', '-b:a', '192k'],
@@ -402,8 +429,11 @@ def convert_format(src_path, dst_path, dst_format):
     dst_format = dst_format.lower().lstrip('.')
     
     try:
-        # 如果源格式和目标格式一样，直接复制文件
-        if src_format == dst_format:
+        # 相同格式，或 JPEG/JFIF 的等价扩展名之间转换时，直接复制文件，
+        # 避免仅为修改扩展名而重新编码、损失图像质量或元数据。
+        if src_format == dst_format or (
+            src_format in JPEG_FORMATS and dst_format in JPEG_FORMATS
+        ):
             shutil.copy(src_path, dst_path)
             print(f'{src_path} copied to {dst_path}')
             return
@@ -448,9 +478,9 @@ def convert_format(src_path, dst_path, dst_format):
             
             try:
                 with Image.open(src_path) as img:
-                    # JPEG 不支持 P/PA/LA/RGBA 等模式，需要统一转为 RGB
-                    # L 模式（灰度）可以保存为 JPEG，其他模式需要转换
-                    if img.mode not in ('RGB', 'L'):
+                    # 只有 JPEG/JFIF 不支持 alpha 或调色板模式；其他目标格式
+                    # 保留原始模式，避免 PNG/WebP/AVIF 等格式丢失透明通道。
+                    if dst_format in JPEG_FORMATS and img.mode not in ('RGB', 'L'):
                         img = img.convert('RGB')
                     img.save(dst_path)
             except Exception as img_e:

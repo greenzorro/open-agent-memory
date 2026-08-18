@@ -37,7 +37,6 @@ try:
         keys = json.load(f)
         GEMINI_API_KEY = keys.get('GEMINI_API_KEY', '')
         DEEPSEEK_API_KEY = keys.get('DEEPSEEK_API_KEY', '')
-        KIMI_API_KEY = keys.get('KIMI_API_KEY', '')
         OPENROUTER_API_KEY = keys.get('OPENROUTER_API_KEY', '')
         GROQ_API_KEY = keys.get('GROQ_API_KEY', '')
         REPLICATE_API_TOKEN = keys.get('REPLICATE_API_TOKEN')
@@ -46,7 +45,6 @@ try:
 except Exception:
     GEMINI_API_KEY = ''
     DEEPSEEK_API_KEY = ''
-    KIMI_API_KEY = ''
     OPENROUTER_API_KEY = ''
     GROQ_API_KEY = ''
     REPLICATE_API_TOKEN = None

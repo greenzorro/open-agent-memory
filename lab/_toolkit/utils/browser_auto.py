@@ -915,12 +915,28 @@ def get_playwright_download_dir() -> str:
         return temp_dir
 
     else:  # wsl, linux, 其他
-        # WSL/Linux系统 - 使用Windows的下载目录策略
+        # WSL/Linux系统
         temp_dir = tempfile.gettempdir()
         print(f"[DEBUG] WSL/Linux临时目录: {temp_dir}")
 
-        # WSL环境下通常访问Windows的下载目录
-        # 可以在这里添加WSL特定的逻辑，暂时使用与Windows相同的策略
+        # 在临时目录中查找Playwright相关的下载/artifacts目录
+        playwright_dirs = []
+        try:
+            for item in os.listdir(temp_dir):
+                item_path = os.path.join(temp_dir, item)
+                if os.path.isdir(item_path):
+                    if ('playwright' in item.lower() and
+                        not item.startswith('.') and
+                        not item.endswith('.sock')):
+                        playwright_dirs.append(item_path)
+        except Exception as e:
+            print(f"[WARNING] Error reading temp directory: {e}")
+
+        if playwright_dirs:
+            playwright_dirs.sort(key=lambda x: os.path.getmtime(x), reverse=True)
+            print(f"[DEBUG] 找到Playwright目录: {playwright_dirs[0]}")
+            return playwright_dirs[0]
+
         return temp_dir
 
 

@@ -972,49 +972,44 @@ def compress_to_webp(src_path, dst_path, quality=85):
 def gif_2_frames(src_path, dst_path):
     """将GIF转换为帧图片
 
-    :param str src_path: 源GIF文件夹路径
+    :param str src_path: 源GIF文件或文件夹路径
     :param str dst_path: 目标帧图片文件夹路径
     """
-    # 判断源文件夹有1个还是多个gif图片
-    gif_count = 0
-    for filename in os.listdir(src_path):
-        src_format = (os.path.splitext(filename)[1])[1:]
-        if src_format in ["gif"]:
-            gif_count += 1
-
-    # 遍历输入文件夹中的图片
-    for filename in os.listdir(src_path):
-        # 忽略隐藏文件和文件夹
-        if filename.startswith("."):
-            continue
-        src_format = (os.path.splitext(filename)[1])[1:]
-        if src_format in ["gif"]:
-            # 打开图片并获取动画帧
+    if os.path.isfile(src_path):
+        gif_files = [src_path] if src_path.lower().endswith(".gif") else []
+    else:
+        gif_files = []
+        for filename in os.listdir(src_path):
+            if filename.startswith("."):
+                continue
             gif_path = os.path.join(src_path, filename)
-            image = Image.open(gif_path)
-            frames = image.n_frames
+            if filename.lower().endswith(".gif"):
+                gif_files.append(gif_path)
 
-            # 根据源文件夹gif图片数量，分情况建立输出目录
-            if gif_count > 1:
-                frame_path = os.path.join(dst_path, os.path.splitext(filename)[0])
-            else:
-                frame_path = dst_path
-            if not os.path.exists(frame_path):
-                os.mkdir(frame_path)
+    gif_count = len(gif_files)
 
-            # 输出文件
-            for i in range(frames):
-                image.seek(i)
-                frame_file_path = os.path.join(
-                    frame_path, f"{os.path.splitext(filename)[0]}_{i}.png"
-                )
-                image.save(frame_file_path)
+    for gif_path in sorted(gif_files):
+        filename = os.path.basename(gif_path)
+        image = Image.open(gif_path)
+        frames = image.n_frames
 
-            # 打印输出结果
-            if os.path.exists(frame_path):
-                print(f"{gif_path} converted")
-            else:
-                print(f"Failed to convert {gif_path}")
+        if gif_count > 1:
+            frame_path = os.path.join(dst_path, os.path.splitext(filename)[0])
+        else:
+            frame_path = dst_path
+        os.makedirs(frame_path, exist_ok=True)
+
+        for i in range(frames):
+            image.seek(i)
+            frame_file_path = os.path.join(
+                frame_path, f"{os.path.splitext(filename)[0]}_{i}.png"
+            )
+            image.save(frame_file_path)
+
+        if os.path.exists(frame_path):
+            print(f"{gif_path} converted")
+        else:
+            print(f"Failed to convert {gif_path}")
 
 
 def frames_2_gif(src_path, dst_path, duration=100, loop=1):

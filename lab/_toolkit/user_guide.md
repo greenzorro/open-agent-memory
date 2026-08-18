@@ -4,7 +4,7 @@
 
 ## 项目概述
 
-`_toolkit` 是日常开发的工具集（从routine同步净化而来），提供文件处理、数据转换、视频处理等多种工具。所有脚本均支持命令行参数调用，可被AI直接执行。
+`routine` 是日常开发的全能工具集，提供内容创作、文件处理、数据转换、自动化任务、视频处理等多种工具。所有脚本均支持命令行参数调用，可被AI直接执行。
 
 **核心特性：**
 - 🤖 **AI友好**：所有脚本支持命令行参数，适合AI调用
@@ -15,30 +15,20 @@
 ## 目录结构
 
 ```
-_toolkit/
-├── 根目录脚本/      - 文件管理、数据转换工具
+routine/
+├── 根目录脚本/      - 文件管理、数据转换、内容创作
+├── utils/          - 核心工具函数库
 ├── image/          - 图像处理工具集
 ├── video/          - 视频处理工具集
 ├── music/          - 音乐处理工具集
-├── tasks/          - 任务定义文档
-├── utils/          - 核心工具函数库
-├── requirements.txt - Python依赖
-└── user_guide.md   - 本手册
+└── tasks/          - 任务定义文档
 ```
 
 ## 使用方式
 
 ### 命令行参数模式（推荐）
 
-所有脚本支持标准命令行参数：
-
-```bash
-# 完整参数名
-python script.py --source /path/to/input --output /path/to/output
-
-# 短参数名
-python script.py -s /path/to/input -o /path/to/output
-```
+所有脚本支持标准命令行参数，具体参数用法请用 `--help` 查看。
 
 ### 查看帮助
 
@@ -65,6 +55,7 @@ python script.py
 
 #### `folder_ungroup.py` - 文件夹解组工具
 **功能：** 将嵌套文件夹中的所有文件提取到单一文件夹中
+**重名规则：** 同名文件按 `_2`、`_3` 顺序保留，避免扁平化时互相覆盖
 
 ---
 
@@ -76,7 +67,7 @@ python script.py
 ---
 
 #### `port_cleaner.py` - 港口清理工具
-**功能：** 工作目录文件归拢与过期清理（基于港口思维）；港口可使用相对或绝对路径，位于工作目录内时会自动从根目录归拢范围中排除。
+**功能：** 工作目录文件归拢与过期清理（基于港口思维）
 
 ---
 
@@ -89,8 +80,11 @@ python script.py
 **支持的格式转换：**
 
 **图片格式转换（支持任意互转）：**
-- 源格式：jpg, jpeg, png, bmp, gif, tiff, webp, avif
+- 源格式：jpg, jpeg, jfif, png, bmp, gif, tiff, webp, avif
 - 目标格式：上述格式任意互转
+- jpg、jpeg 与 jfif 之间仅变更扩展名时直接复制文件，不重新编码
+- PNG、WebP、AVIF 等支持透明度的目标格式会保留 alpha 通道
+- 文件夹输入递归处理；转换后同名的文件按 `_2`、`_3` 顺序保留
 
 **音频格式转换：**
 - 源格式：mp3, wav, flac, aac, ogg, m4a, opus
@@ -113,6 +107,26 @@ python script.py
 #### `ai_studio_2_md.py` - AI Studio聊天记录转换器
 **功能：** 将AI Studio的JSON聊天记录转换为格式化的Markdown文档（自动识别用户和AI的对话，生成带回合标题的格式化文档）
 **输入：** 支持单个 JSON 文件或包含 JSON 文件的文件夹；文件夹模式会递归处理
+
+---
+
+### 内容同步工具
+
+#### `gist_sync.py` - GitHub secret Gist 同步
+**功能：** 把一份 Markdown 创建或更新为一个 secret Gist，并校验远端内容与源文件一致
+**用途：** Cognition Shaper 云端 Living Surface 的展示层同步；不是通用 Git 维护，也不批量管理多个 Gist
+**输入：** 单个 Markdown 文件；无既有 Gist 时创建，有既有身份时覆盖同一文件
+**输出：** 标准输出 JSON（成功含 gist_id / html_url；失败含 error），不写本地产物文件
+**认证：** token 只从环境变量或 dotenv 读取（`COGNITION_SHAPER_GITHUB_TOKEN` / `GH_TOKEN` / `GITHUB_TOKEN`，或唯一的 `GITHUB_*_TOKEN`），禁止在命令行传 token
+**依赖：** `utils.basic.get_param_value`；GitHub 调用本身只用标准库
+
+---
+
+## 核心工具函数库（utils/）
+
+`utils/` 提供 routine 脚本复用的基础能力，包括文件处理、图像/视频处理、表格解析、OCR、浏览器自动化、音乐解析、通信、消息推送和 API 集成。
+
+**详细说明：** 见 `utils/README.md`
 
 ---
 
@@ -162,11 +176,6 @@ python script.py
 ### `random_video_mixer.py` - 随机视频混剪工具
 **功能：** 随机选择视频片段进行混剪，支持完整使用或截取模式
 
-**支持功能：**
-- 随机变换：缩放、翻转、变速、色彩调整、色调偏移
-- 使用方式：完整使用或截取片段
-- 支持分类筛选
-
 ---
 
 ### `ezgif_video_2_gif.py` - 视频转GIF工具
@@ -178,11 +187,13 @@ python script.py
 
 ### `music_list_2_txt.py` - 歌单转换工具
 **功能：** HTML歌单转换为TXT导入格式（用于跨平台歌单迁移）
+**输出：** TXT歌名清单，默认写入脚本目录下的 `m_list.txt`，也可以指定输出文件
 
 ---
 
 ### `Netease_free.py` - 网易云免费音乐下载工具
 **功能：** 从网易云音乐歌单下载可直接获取的免费歌曲
+**输出：** 可下载音乐默认保存到下载目录下的 `Netease_free`，也可以指定输出目录；不可下载歌曲写入脚本目录下的 `m_list.txt`
 
 ---
 
@@ -190,24 +201,5 @@ python script.py
 
 ### 获取更多帮助
 
-- **核心工具库**：见 `utils/` 目录下的各模块
-
-### 工具链关系
-
-```
-脚本（业务逻辑）
-    ↓
-utils（核心函数库）
-    ↓
-基础依赖（FFmpeg、Pillow、Playwright等）
-```
-
-### 跨平台支持
-
-所有脚本支持以下平台：
-- Windows
-- WSL (Windows Subsystem for Linux)
-- Linux
-- macOS
-
-**注意：** WSL环境下默认输出到Windows下载目录，便于文件在Windows中访问。
+- **项目说明**：见 `notes.md`
+- **核心工具库**：见 `utils/README.md`

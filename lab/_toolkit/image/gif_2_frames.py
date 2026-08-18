@@ -25,7 +25,7 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
-    parser.add_argument("--source", "-s", help="源文件夹路径（必填，包含GIF文件）")
+    parser.add_argument("--source", "-s", help="源GIF文件或文件夹路径")
     parser.add_argument(
         "--output",
         "-o",
@@ -35,7 +35,7 @@ def main():
     args = parser.parse_args()
 
     SRC_FOLDER = get_param_value(
-        args, "source", prompt_text="源文件夹路径（包含GIF文件）"
+        args, "source", prompt_text="源GIF文件或文件夹路径"
     )
 
     if platform_type == "wsl":
@@ -45,7 +45,7 @@ def main():
     DST_FOLDER = get_param_value(args, "output", script_default=default_output)
 
     if not os.path.exists(SRC_FOLDER):
-        print(f"错误：源文件夹不存在: {SRC_FOLDER}")
+        print(f"错误：源路径不存在: {SRC_FOLDER}")
         sys.exit(1)
 
     if not os.path.exists(DST_FOLDER):

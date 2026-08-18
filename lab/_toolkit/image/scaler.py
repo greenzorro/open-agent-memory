@@ -15,7 +15,7 @@ current_dir = os.path.dirname(__file__)
 sys.path.insert(0, os.path.dirname(current_dir))
 
 from utils.image import scale_image
-from utils.basic import get_param_value
+from utils.basic import get_param_value, get_source_files
 from utils.path import get_platform, PATH_DOWNLOADS_FROM_WIN, PATH_DOWNLOADS
 
 
@@ -23,7 +23,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="将图片限制在指定最大值内，支持长边或短边缩放"
     )
-    parser.add_argument("--source", "-s", help="源文件夹路径（必填）")
+    parser.add_argument("--source", "-s", help="源图片文件或文件夹路径（必填）")
     parser.add_argument(
         "--output", "-o", help="输出文件夹路径（可选，默认：Img_scaled）"
     )
@@ -37,7 +37,7 @@ def main():
     parser.add_argument("--min-width", type=int, help="长图的最小宽度（必填）")
     args = parser.parse_args()
 
-    SRC_FOLDER = get_param_value(args, "source", prompt_text="源文件夹路径")
+    SRC_PATH = get_param_value(args, "source", prompt_text="源图片文件或文件夹路径")
 
     platform_type = get_platform()
     if platform_type == "wsl":
@@ -51,32 +51,23 @@ def main():
     mode = get_param_value(args, "mode", prompt_text="缩放模式（long/short）")
     min_width = int(get_param_value(args, "min_width", prompt_text="长图的最小宽度"))
 
-    if not os.path.exists(SRC_FOLDER):
-        print(f"错误：源文件夹不存在: {SRC_FOLDER}")
+    if not os.path.exists(SRC_PATH):
+        print(f"错误：源路径不存在: {SRC_PATH}")
         sys.exit(1)
 
     if not os.path.exists(DST_FOLDER):
         os.makedirs(DST_FOLDER)
 
-    # 遍历输入文件夹中的图片
-    for filename in os.listdir(SRC_FOLDER):
-        # 忽略隐藏文件和文件夹
-        if filename.startswith("."):
-            continue
-        src_format = (os.path.splitext(filename)[1])[1:]
-        if src_format in ["jpg", "jpeg", "png", "bmp", "gif"]:
-            # 打开图片并获取原始宽高
-            src_path = os.path.join(SRC_FOLDER, filename)
-            dst_path = os.path.join(DST_FOLDER, filename)
+    for src_path in get_source_files(SRC_PATH, allowed_extensions=["jpg", "jpeg", "png", "bmp", "gif"]):
+        filename = os.path.basename(src_path)
+        dst_path = os.path.join(DST_FOLDER, filename)
 
-            # 处理图片
-            scale_image(src_path, dst_path, max_size, min_width, mode=mode)
+        scale_image(src_path, dst_path, max_size, min_width, mode=mode)
 
-            # 打印输出结果
-            if os.path.exists(dst_path):
-                print(f"{src_path} scaled")
-            else:
-                print(f"Failed to scale {src_path}")
+        if os.path.exists(dst_path):
+            print(f"{src_path} scaled")
+        else:
+            print(f"Failed to scale {src_path}")
 
 
 if __name__ == "__main__":

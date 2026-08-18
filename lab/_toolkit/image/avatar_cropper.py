@@ -15,7 +15,7 @@ current_dir = os.path.dirname(__file__)
 sys.path.insert(0, os.path.dirname(current_dir))
 
 from utils.image import detect_faces, SUPPORTED_IMAGE_FORMATS
-from utils.basic import get_param_value
+from utils.basic import get_param_value, get_source_files
 from utils.path import get_platform, PATH_DOWNLOADS_FROM_WIN, PATH_DOWNLOADS
 
 # 导入额外需要的库（人脸检测需要）
@@ -107,7 +107,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="批量将包含人脸的照片裁剪为指定尺寸的头像"
     )
-    parser.add_argument("-s", "--source", help="源文件夹路径（必填）")
+    parser.add_argument("-s", "--source", help="源图片文件或文件夹路径（必填）")
     parser.add_argument("-o", "--output", help="输出文件夹路径（可选，默认：Avatars）")
     parser.add_argument("--shape", choices=['circle', 'square'], help="头像形状")
     parser.add_argument("--size", type=int, help="输出尺寸（默认500）")
@@ -118,7 +118,7 @@ def main():
     # 使用 utils 的 get_param_value 统一参数处理
     source = get_param_value(
         args, 'source',
-        prompt_text="请输入源图片目录路径"
+        prompt_text="请输入源图片文件或目录路径"
     )
 
     # 计算默认输出路径（与其他脚本保持一致，默认到下载目录）
@@ -151,7 +151,7 @@ def main():
     )
 
     if not os.path.exists(source):
-        print(f"错误：源目录不存在 {source}")
+        print(f"错误：源路径不存在 {source}")
         return
 
     os.makedirs(output, exist_ok=True)
@@ -160,21 +160,18 @@ def main():
     valid_exts = tuple(SUPPORTED_IMAGE_FORMATS)
     processed_count = 0
 
-    # 遍历源目录中的图片文件
-    for filename in os.listdir(source):
-        if filename.lower().endswith(valid_exts):
-            input_path = os.path.join(source, filename)
+    for input_path in get_source_files(source, allowed_extensions=valid_exts):
+        filename = os.path.basename(input_path)
+        ext = ".png" if shape == 'circle' else ".jpg"
+        output_filename = os.path.splitext(filename)[0] + ext
+        output_path = os.path.join(output, output_filename)
 
-            ext = ".png" if shape == 'circle' else ".jpg"
-            output_filename = os.path.splitext(filename)[0] + ext
-            output_path = os.path.join(output, output_filename)
+        if input_path == output_path:
+            print(f"跳过相同文件: {filename}")
+            continue
 
-            if input_path == output_path:
-                print(f"跳过相同文件: {filename}")
-                continue
-
-            if process_avatar(input_path, output_path, shape, size, padding):
-                processed_count += 1
+        if process_avatar(input_path, output_path, shape, size, padding):
+            processed_count += 1
 
     print(f"\n处理完成！共处理了 {processed_count} 张图片。")
     print(f"输出目录: {output}")

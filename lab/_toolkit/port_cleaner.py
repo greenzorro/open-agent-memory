@@ -1,6 +1,6 @@
 """
 File: port_cleaner.py
-Project: open-agent-memory
+Project: routine
 Created: 2026-04-16 21:00:00
 Author: Victor Cheng
 Email: hi@victor42.work
@@ -30,15 +30,6 @@ def resolve_port(workdir: Path, port: str) -> Path:
     if Path(port).is_absolute():
         return Path(port)
     return workdir / port
-
-
-def port_root_exclusion(workdir: Path, port: Path) -> str | None:
-    """Return the workdir root entry containing an internal port."""
-    try:
-        relative_port = port.relative_to(workdir)
-    except ValueError:
-        return None
-    return relative_port.parts[0] if relative_port.parts else None
 
 
 def collect_from_root(workdir: Path, exclude_dirs: set, exclude_files: set) -> list[Path]:
@@ -243,10 +234,9 @@ def main():
     exclude_dirs = set(exclude_dirs)
     exclude_files = set(exclude_files)
 
-    # 根目录扫描按第一层名称过滤；嵌套港口需排除其所属的根目录
-    port_root = port_root_exclusion(workdir, port)
-    if port_root is not None:
-        exclude_dirs.add(port_root)
+    # 自动排除 port 目录和 source 目录
+    if port.is_relative_to(workdir):
+        exclude_dirs.add(port.relative_to(workdir).as_posix())
     for src in sources:
         exclude_dirs.add(src)
 

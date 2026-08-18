@@ -11,7 +11,7 @@ import os
 import sys
 import argparse
 import json
-from utils.basic import get_param_value
+from utils.basic import get_param_value, get_source_files
 from utils.path import platform_type, PATH_DOWNLOADS_FROM_WIN, PATH_DOWNLOADS
 
 
@@ -85,12 +85,13 @@ def generate_markdown_content(chat_records):
     return "\n".join(markdown_lines)
 
 
-def process_single_file(json_file_path, output_folder, include_thoughts=False):
+def process_single_file(json_file_path, output_folder, include_thoughts=False, dry_run=False):
     """处理单个JSON文件
 
     :param str json_file_path: JSON文件路径
     :param str output_folder: 输出目录路径
     :param bool include_thoughts: 是否包含思考过程
+    :param bool dry_run: 是否只预览不写入
     :return bool: 处理是否成功
     """
     # 提取聊天记录
@@ -107,6 +108,12 @@ def process_single_file(json_file_path, output_folder, include_thoughts=False):
     base_name = os.path.splitext(os.path.basename(json_file_path))[0]
     output_file_name = f"{base_name}.md"
     output_file_path = os.path.join(output_folder, output_file_name)
+
+    if dry_run:
+        print(
+            f"[dry-run] 将转换: {json_file_path} -> {output_file_path} (共 {len(chat_records)} 条记录)"
+        )
+        return True
 
     # 写入markdown文件
     try:
@@ -142,7 +149,7 @@ def main():
     )
 
     # 添加参数
-    parser.add_argument("--source", "-s", help="源文件夹路径（包含JSON文件）")
+    parser.add_argument("--source", "-s", help="源JSON文件或文件夹路径")
     parser.add_argument(
         "--output",
         "-o",
@@ -153,16 +160,21 @@ def main():
         action="store_true",
         help="包含AI思考过程（默认：不包含）",
     )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="演练模式：读取并解析 JSON，但不创建目录或写入 Markdown 文件",
+    )
 
     # 解析参数
     args = parser.parse_args()
 
-    # 获取源文件夹路径（必填参数，无默认值时询问用户）
-    SRC_FOLDER = get_param_value(args, "source", prompt_text="源文件夹路径")
+    # 获取源路径（必填参数，无默认值时询问用户）
+    SRC_PATH = get_param_value(args, "source", prompt_text="源JSON文件或文件夹路径")
 
     # 验证源路径存在
-    if not os.path.exists(SRC_FOLDER):
-        print(f"错误：源路径不存在: {SRC_FOLDER}")
+    if not os.path.exists(SRC_PATH):
+        print(f"错误：源路径不存在: {SRC_PATH}")
         sys.exit(1)
 
     # 获取目标文件夹路径（可选参数，有脚本默认值，不问用户）
@@ -177,29 +189,30 @@ def main():
         get_param_value(args, "include_thoughts", script_default=False)
     )
 
-    # 确保目标目录存在
-    if not os.path.exists(OUTPUT_FOLDER):
+    if args.dry_run:
+        print("当前为 dry-run 演练模式，不会创建目录或写入文件")
+    elif not os.path.exists(OUTPUT_FOLDER):
         os.makedirs(OUTPUT_FOLDER)
 
-    # 遍历源目录中的所有JSON文件
     processed_count = 0
     success_count = 0
 
-    for root, dirs, files in os.walk(SRC_FOLDER):
-        for filename in files:
-            # 检查是否为JSON文件（.json扩展名或无扩展名）
-            if filename.startswith(".") or not is_json_file(filename):
-                continue
+    for json_file_path in get_source_files(SRC_PATH, recursive=True):
+        filename = os.path.basename(json_file_path)
+        if not is_json_file(filename):
+            continue
 
-            json_file_path = os.path.join(root, filename)
-            processed_count += 1
+        processed_count += 1
+        if process_single_file(
+            json_file_path,
+            OUTPUT_FOLDER,
+            include_thoughts,
+            dry_run=args.dry_run,
+        ):
+            success_count += 1
 
-            if process_single_file(json_file_path, OUTPUT_FOLDER, include_thoughts):
-                success_count += 1
-
-    print(
-        f"\n转换完成！共处理 {processed_count} 个JSON文件，成功转换 {success_count} 个文件"
-    )
+    action = "预计转换" if args.dry_run else "成功转换"
+    print(f"\n转换完成！共处理 {processed_count} 个JSON文件，{action} {success_count} 个文件")
     if success_count > 0:
         print(f"输出目录: {OUTPUT_FOLDER}")
 
