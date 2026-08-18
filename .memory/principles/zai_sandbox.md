@@ -34,7 +34,22 @@ tags: ["git", "repo", "sandbox", "zai", "分离", "workspace", "持久化", "架
         └── lab/                      ← 工具包 + 项目实验数据（含 _toolkit/ 等）
 ```
 
-## 持久化原理
+## 环境属性
+
+- Python：3.12.13，通过 `.venv` + `uv` 管理
+- 内存：3.9G 总量，~3.1G 空闲
+- 进程寿命：未精确测量，但 cron 多步执行未遇到超时
+
+## 网络环境
+
+- **出站 CDN 封锁**：沙盒出口 IP 被部分 CDN（Akamai、Fastly）的 Bot Management 默认拒绝，curl 裸连返回 403 或超时
+- **实际工作方式**：不依赖 curl 裸连。使用 `z-ai` web_search CLI（远端 IP）+ `agent-browser`（可直连部分站点提取正文）
+- **无 autoglm 工具链**
+
+## 平台调度（Cron）
+
+- 内置 cron 机制，已验证可用
+- wake-memory cron 周期执行 `git pull --rebase`，确保记忆和任务文件跨会话同步
 
 `/home/z/my-project/` 是**唯一可靠的持久存储区域**，沙盒重置时该目录不会丢失。但其持久化机制有严格前提：
 
@@ -77,3 +92,14 @@ tags: ["git", "repo", "sandbox", "zai", "分离", "workspace", "持久化", "架
 - 记忆系统仓库包含 `.memory/`、`lab/`、`README.md` 等，这些内容的变更可提交到该仓库
 - 在执行 `git add`/`git commit`/`git push` 前，**必须通过 `git remote -v` 确认当前所在仓库**
 - 操作记忆系统仓库时，**必须先 `cd /home/z/my-project/agent-workspace`**，绝不能在工作目录下误操作
+
+## agent-vik 仓库认证
+
+沙盒对 `[REDACTED:github_token]` 等模式做了脱敏拦截，记忆文件中的明文 token 无法被读取。agent-vik 的 GitHub PAT 存储在 `/home/z/my-project/.env`（字段 `GITHUB_AGENT_VIK_TOKEN`），通过 git `insteadOf` 自动注入：
+
+```bash
+TOKEN=$(grep GITHUB_AGENT_VIK_TOKEN /home/z/my-project/.env | cut -d= -f2)
+git config --global "url.https://${TOKEN}@github.com/agent-vik/.insteadOf" "https://github.com/agent-vik/"
+```
+
+配置后 `projects/` 下所有 agent-vik 仓库的 remote URL 保持干净，push/pull 时 git 自动注入认证。每次新 session 启动时需重新执行此配置。agent-workspace 仓库使用 greenzorro 身份，不受此规则影响。

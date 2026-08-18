@@ -30,11 +30,12 @@ tags: ["autoclaw", "sandbox", "沙盒", "git", "workspace", "限制", "平台特
 - PyPI 官方源下载大包易超时，Python 包安装必须使用清华镜像源
 - 无 elevated 权限，不能 apt-get install
 - 无 pip/ensurepip，必须用 `uv` 或 `python3 -m venv` 管理 Python 环境
+- **出站 CDN 封锁**：沙盒出口 IP 被部分 CDN（Akamai、Fastly）的 Bot Management 默认拒绝，curl 裸连返回 403 或超时。使用自建 nginx 或 AWS ELB 的站点通常不受影响
 
 ## Git 操作规则
 
 - 修改前先 `git pull origin main --rebase`
-- **网络稳定配置**：沙盒 git 默认用 HTTP/2，长连接/大传输易触发 `GnuTLS recv error (-110): TLS connection was non-properly terminated`。设置 `git config --local http.version HTTP/1.1` 和 `git config --local http.postBuffer 52428800` 可稳定解决（实测 10/10 fetch + 10/10 push 全部成功）
+- **网络稳定配置**：沙盒 git 默认用 HTTP/2，长连接/大传输易触发 `GnuTLS recv error (-110): TLS connection was non-properly terminated`。设置 `git config --local http.version HTTP/1.1` 和 `git config --local http.postBuffer 52428800` 可稳定解决
 - `git push` 超时可用 GitHub REST API 兜底
 - API 直接写远程后必须执行 `git fetch origin main` 同步本地 ref
 - 多仓库环境下每次 git 操作前确认 `pwd` 和 `git remote -v`
@@ -52,7 +53,9 @@ tags: ["autoclaw", "sandbox", "沙盒", "git", "workspace", "限制", "平台特
 
 ## 工具与 API 可用性
 
-- AutoGLM 系列 token 从本地服务自动获取
+- AutoGLM 系列 token 从本地服务自动获取（`http://127.0.0.1:18432/get_token`）
+- AutoGLM 脚本位于 `~/.openclaw-autoclaw/skills/autoglm-*/`，调用远端 API，出口 IP 独立于沙盒，可穿透上述 CDN 封锁
+- Cloudflare Browser Run 可用，边缘 IP 独立于沙盒
 - Variflight API key 存储在外挂记忆系统
 - 高德 API key 存储在外挂记忆系统
 - Cloudflare R2 必须使用 REST API，不能用 S3 兼容协议
@@ -60,6 +63,7 @@ tags: ["autoclaw", "sandbox", "沙盒", "git", "workspace", "限制", "平台特
 
 ## 子 Agent 使用规则
 
+- OpenClaw 内置 cron 系统，支持 `isolated` agentTurn 定时任务
 - 子 Agent 并发易触发模型/token 额度限制
 - 关键路径任务应由主线程直接执行
 - 子 Agent 失败后要有主线程兜底方案
