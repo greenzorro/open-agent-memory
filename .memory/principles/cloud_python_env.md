@@ -52,11 +52,7 @@ python3 -m venv /path/to/venv
 
 ## 3. 工具箱脚本的 Cloud 适配
 
-`lab/_toolkit/` 中的脚本依赖 `utils` 模块，但 `utils/path.py` 中的路径变量是为 Local Mode 设计的。
-
-**Cloud Mode 下的处理策略**：
-- 简单任务：直接使用原生库（如 Pillow）绕过工具箱脚本
-- 复杂任务：在调用前手动覆盖路径变量，或为 Cloud Mode 创建精简版脚本
+`BASE_PATH_TOOLKIT` 下的脚本依赖同树 `utils`。云端 `utils/path.py` 与本地共用变量名，取值为沙盒脱敏布局（如 `PATH_DOWNLOADS` → `/tmp`，`BASE_PATH` → `~/Drive`，`BASE_PATH_TOOLKIT` → 本 `_toolkit` 根）。按这些值使用，不要当成宿主机的 Drive / Downloads。
 
 ## 4. 文件输出路径约定
 

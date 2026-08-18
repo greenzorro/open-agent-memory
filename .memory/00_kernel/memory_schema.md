@@ -11,7 +11,7 @@ When the User commands `/learn` (or explicitly asks you to remember something gl
 
 1. **Identify**: Extract the core insights from the current conversation.
 2. **Filter**: Discard all project-specific data (e.g., local variables). Keep ONLY global, reusable knowledge.
-3. **Sanitize Paths**: **CRITICAL STEP.** Scan content for absolute paths. Replace them with abstract variables defined in `routine/utils/path.py` (see Section 5).
+3. **Sanitize Paths**: **CRITICAL STEP.** Scan content for absolute paths. Replace them with abstract variables defined in `path.py` (see Section 6).
 4. **Format**: Draft a `.md` file using the strict YAML Frontmatter defined below.
 5. **Route**: Save the file to the correct subfolder inside `.memory/`.
 6. **Persist (Environment Logic)**:
@@ -122,18 +122,20 @@ Hardcoded host absolute paths in memory content are forbidden **except** where l
 
 **Default Mapping Rule** (cross-machine / `env: global` content that refers to the User's shared filesystem):
 
-Refer to `routine/utils/path.py` and use these variables instead of raw paths:
+The variable names are identical in Local `routine/utils/path.py` and Cloud `lab/_toolkit/utils/path.py`. Load the file for the current `env`, then use these symbols instead of raw paths:
 
 - `PATH_DOWNLOADS`: Instead of `/Users/{user}/Downloads` or `D:\Downloads`
 - `BASE_PATH_CODING`: Instead of `/Users/{user}/.../coding`
 - `BASE_PATH_CODING/agent-workspace`: Instead of absolute path to this repo
 - `BASE_PATH_CODING/projects`: Instead of absolute path to projects folder
-- `BASE_PATH_CODING/routine`: Instead of absolute path to routine folder
+- `BASE_PATH_TOOLKIT`: Instead of `lab/_toolkit/...` or `BASE_PATH_CODING/routine/...` for daily-toolkit scripts
 
 **Example:**
 
 - ❌ Bad: "The dataset is in `/Users/victor/Downloads/temp`"
 - ✅ Good: "The dataset is in `PATH_DOWNLOADS/temp`"
+- ❌ Bad: "Run `lab/_toolkit/convertor.py`" or "Run `BASE_PATH_CODING/routine/convertor.py`"
+- ✅ Good: "Run `BASE_PATH_TOOLKIT/convertor.py`"
 
 **Exceptions (absolute paths allowed):**
 

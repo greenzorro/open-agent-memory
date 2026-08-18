@@ -26,11 +26,11 @@
 
 ### 第3步：探索日常工具包
 
-读取 `lab/_toolkit/user_guide.md` 了解工具集全貌。
+从当前环境的 `path.py` 读取 `BASE_PATH_TOOLKIT`，再读取该目录下的 `user_guide.md` 了解工具集全貌。
 
-探索方法：读取 user_guide.md，但对其中提到的每个工具，必须验证对应的脚本文件在 `lab/_toolkit/` 目录下实际存在。user_guide 是从本地 routine 项目净化过来的，可能包含在当前环境中不存在的工具描述。只纳入经过文件存在性验证的能力。
+探索方法：读取 user_guide.md，但对其中提到的每个工具，必须验证对应的脚本文件在 `BASE_PATH_TOOLKIT` 下实际存在。user_guide 可能包含当前环境中不存在的工具描述。只纳入经过文件存在性验证的能力。
 
-验证方式：列出 `lab/_toolkit/` 及其子目录的实际文件列表，与 user_guide 中描述的工具逐一核对，排除有文档但无文件的工具。
+验证方式：列出 `BASE_PATH_TOOLKIT` 及其子目录的实际文件列表，与 user_guide 中描述的工具逐一核对，排除有文档但无文件的工具。
 
 ### 第4步：探索当前平台技能
 

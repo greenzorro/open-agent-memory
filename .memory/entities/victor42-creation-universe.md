@@ -74,7 +74,7 @@ tags: ["victor42", "victor42-work", "gadgets", "open-source", "github", "portfol
 
 - 私有项目：本地有但 GitHub 公开账号不可见的项目不写入。
 - 博客内容与内容策略：归 `victor42-digital-entity.md`、`content-strategy.md` 等记忆处理。
-- notebook、TIL、研究笔记、写作模板：归 `victor42_notebook.md` 处理。
+- notebook、TIL、研究笔记、写作模板：不纳入本记忆。
 - 具体项目实现细节、bug、部署步骤：放在对应项目 README、notes 或仓库文档中。
 - 已归档的历史主题或模板资产，除非用户明确要求梳理历史开源资产。
 
