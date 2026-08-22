@@ -93,13 +93,7 @@ tags: ["git", "repo", "sandbox", "zai", "分离", "workspace", "持久化", "架
 - 在执行 `git add`/`git commit`/`git push` 前，**必须通过 `git remote -v` 确认当前所在仓库**
 - 操作记忆系统仓库时，**必须先 `cd /home/z/my-project/agent-workspace`**，绝不能在工作目录下误操作
 
-## agent-vik 仓库认证
+## 敏感信息限制
 
-沙盒对 `[REDACTED:github_token]` 等模式做了脱敏拦截，记忆文件中的明文 token 无法被读取。agent-vik 的 GitHub PAT 存储在 `/home/z/my-project/.env`（字段 `GITHUB_AGENT_VIK_TOKEN`），通过 git `insteadOf` 自动注入：
-
-```bash
-TOKEN=$(grep GITHUB_AGENT_VIK_TOKEN /home/z/my-project/.env | cut -d= -f2)
-git config --global "url.https://${TOKEN}@github.com/agent-vik/.insteadOf" "https://github.com/agent-vik/"
-```
-
-配置后 `projects/` 下所有 agent-vik 仓库的 remote URL 保持干净，push/pull 时 git 自动注入认证。每次新 session 启动时需重新执行此配置。agent-workspace 仓库使用 greenzorro 身份，不受此规则影响。
+- 沙盒对 `[REDACTED:github_token]` 等模式做了脱敏拦截，记忆文件中的明文 token 无法被读取
+- `.env` 会被沙盒重置，不可用于持久存储任何凭据
