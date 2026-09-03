@@ -28,7 +28,7 @@ tags: ["git", "repo", "sandbox", "zai", "分离", "workspace", "持久化", "架
     ├── skills/                       ← 平台技能（.gitignore 排除，每次重置为默认）
     ├── worklog.md / .env / .gitignore
     └── agent-workspace/              ← 记忆系统仓库（嵌套 git）
-        ├── .git/                     ← 记忆系统的 git（远程 → greenzorro/agent-workspace）
+        ├── .git/                     ← 记忆系统的 git（远程 → 远程记忆仓库）
         ├── .memory/                  ← 全局记忆（本仓库的核心内容）
         ├── README.md
         └── lab/                      ← 工具包 + 项目实验数据（含 _toolkit/ 等）
@@ -84,7 +84,7 @@ tags: ["git", "repo", "sandbox", "zai", "分离", "workspace", "持久化", "架
 | 仓库 | 路径 | 远程 | 允许提交的内容 |
 |------|------|------|----------------|
 | 工作目录 | `/home/z/my-project/` | 无（纯本地） | `backup/`、`projects/`、临时数据、实验产出；projects/ 下可有独立 git 仓库 |
-| 记忆系统 | `/home/z/my-project/agent-workspace/` | `greenzorro/agent-workspace` | 整个仓库（`.memory/`、`lab/`、`README.md` 等） |
+| 记忆系统 | `/home/z/my-project/agent-workspace/` | 远程记忆仓库 | 整个仓库（`.memory/`、`lab/`、`README.md` 等） |
 
 ## 执行红线
 
