@@ -20,6 +20,7 @@ _submodules = [
     'browser_auto',
     'ocr',
     'api_telegram',
+    'api_email',
     'api_ai',
 ]
 

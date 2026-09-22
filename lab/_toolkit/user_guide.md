@@ -124,7 +124,7 @@ python script.py
 
 ## 核心工具函数库（utils/）
 
-`utils/` 提供 routine 脚本复用的基础能力，包括文件处理、图像/视频处理、表格解析、OCR、浏览器自动化、音乐解析、通信、消息推送和 API 集成。
+`utils/` 提供 routine 脚本复用的基础能力，包括文件处理、图像/视频处理、表格解析、OCR、浏览器自动化、音乐解析、通信、消息推送（Telegram、邮件）和 API 集成。
 
 **详细说明：** 见 `utils/README.md`
 
