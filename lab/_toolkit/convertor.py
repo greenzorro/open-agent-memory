@@ -14,7 +14,7 @@ from utils.basic import (
     get_param_value, convert_format, get_source_files,
     plan_flattened_destinations,
     IMAGE_FORMATS, AUDIO_FORMATS, VIDEO_FORMATS,
-    VIDEO_CODEC_OPTIONS, AUDIO_CODEC_OPTIONS,
+    VIDEO_CODEC_OPTIONS,
 )
 from utils.path import platform_type, PATH_DOWNLOADS_FROM_WIN, PATH_DOWNLOADS
 

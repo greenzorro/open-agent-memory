@@ -7,9 +7,7 @@ Email: hi@victor42.work
 Description: 
 """
 
-import os
 import subprocess
-from pathlib import Path
 from typing import List
 
 

@@ -9,16 +9,13 @@ Description:
 
 import os
 import shutil
-import re
 import random
-import json
 import numpy as np
 import imagehash
 from PIL import Image
 from pathlib import Path
-from typing import List, Dict, Set, Tuple, Optional
+from typing import List, Optional
 from dataclasses import dataclass, field
-from collections import defaultdict
 from .basic import extract_number_from_filename
 
 

@@ -10,10 +10,9 @@ Description: 基于 Playwright 的通用网页自动化工具库
 import os
 import time
 import asyncio
-import functools
 import tempfile
 import webbrowser
-from typing import Optional, List, Any, Dict, Union, Callable
+from typing import Optional, List, Any, Union, Callable
 from .path import platform_type
 try:
     from playwright.async_api import async_playwright, Browser, Page, ElementHandle, TimeoutError as PlaywrightTimeoutError
