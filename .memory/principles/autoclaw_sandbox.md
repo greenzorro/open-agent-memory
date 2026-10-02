@@ -3,7 +3,7 @@ id: "mem-20260801-autoclaw-sandbox"
 type: "principle"
 env: "cloud"
 confidence: "high"
-tags: ["autoclaw", "sandbox", "沙盒", "git", "workspace", "限制", "平台特征"]
+tags: ["autoclaw", "sandbox", "沙盒", "git", "workspace", "限制", "平台特征", "翻墙", "出网", "借道", "代理", "墙外访问", "CDN封锁", "GFW"]
 ---
 
 # Autoclaw 沙盒环境特征与限制
@@ -60,6 +60,21 @@ tags: ["autoclaw", "sandbox", "沙盒", "git", "workspace", "限制", "平台特
 - 高德 API key 存储在外挂记忆系统
 - Cloudflare R2 必须使用 REST API，不能用 S3 兼容协议
 - 沙盒中无完整浏览器，无法与复杂 SPA 表单交互
+
+## 出网边界与借道通道
+
+沙盒出口为阿里云北京（AS37963，中国大陆），**自身无翻墙能力**：Google、YouTube、Telegram、HuggingFace、OpenAI、xAI、Medium 等直连返回 `000`，Telegram 与 Google 存在 DNS 污染（解析结果随请求变化且指向无关网段）。Anthropic 系（api.anthropic.com、platform.claude.com）能建连但被 Cloudflare 按地区/IP 返回 403。`api.github.com` 与国内站点直连正常。
+
+在「借道即算可达」的口径下，墙外内容通过以下通道间接获取，均为**代理方在墙外抓取后回传**，沙盒本身不触碰墙外网络：
+
+| 通道 | 能力 | 限制 |
+|------|------|------|
+| AutoGLM `open-link` | 读取任意墙外网页正文（Medium、HuggingFace、arxiv 等） | 仅只读，不能登录/交互 |
+| AutoGLM `websearch` | 搜索墙外内容 | 仅只读 |
+| Cloudflare Browser Run | 云端浏览器渲染 JS 重页面（OpenAI/Anthropic/Gemini 定价页） | 有配额（免费 10 分钟/天），易触发 429 |
+| 自建反代（`${SELF_HOSTED_PROXY}`） | 转发已配置的上游 API | 仅限已配置服务 |
+
+**能力边界**：信息获取类任务（查资料、读文章、抓定价、做调研）不受墙限制；交互类操作（登录墙外账号、发帖、点按钮）基本不可行。Telegram 发消息无任何可用通道（无代理可代为发送），属结构性缺口。
 
 ## 子 Agent 使用规则
 
