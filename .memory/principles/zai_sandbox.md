@@ -31,6 +31,7 @@ tags: ["git", "repo", "sandbox", "zai", "分离", "workspace", "持久化", "架
         ├── .git/                     ← 记忆系统的 git（远程 → 远程记忆仓库）
         ├── .memory/                  ← 全局记忆（本仓库的核心内容）
         ├── README.md
+        ├── WAKEUP.md
         └── lab/                      ← 工具包 + 项目实验数据（含 _toolkit/ 等）
 ```
 
@@ -84,12 +85,12 @@ tags: ["git", "repo", "sandbox", "zai", "分离", "workspace", "持久化", "架
 | 仓库 | 路径 | 远程 | 允许提交的内容 |
 |------|------|------|----------------|
 | 工作目录 | `/home/z/my-project/` | 无（纯本地） | `backup/`、`projects/`、临时数据、实验产出；projects/ 下可有独立 git 仓库 |
-| 记忆系统 | `/home/z/my-project/agent-workspace/` | 远程记忆仓库 | 整个仓库（`.memory/`、`lab/`、`README.md` 等） |
+| 记忆系统 | `/home/z/my-project/agent-workspace/` | 远程记忆仓库 | 整个仓库（`.memory/`、`lab/`、`README.md`、`WAKEUP.md` 等） |
 
 ## 执行红线
 
 - 项目级操作（分组调整、数据生成、脚本适配、地图产出等）**只在工作目录的 git 中操作**，不可 commit 到记忆系统仓库
-- 记忆系统仓库包含 `.memory/`、`lab/`、`README.md` 等，这些内容的变更可提交到该仓库
+- 记忆系统仓库包含 `.memory/`、`lab/`、`README.md`、`WAKEUP.md` 等，这些内容的变更可提交到该仓库
 - 在执行 `git add`/`git commit`/`git push` 前，**必须通过 `git remote -v` 确认当前所在仓库**
 - 操作记忆系统仓库时，**必须先 `cd /home/z/my-project/agent-workspace`**，绝不能在工作目录下误操作
 

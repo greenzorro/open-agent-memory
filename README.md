@@ -1,140 +1,109 @@
-# Agent OS: The Core Workspace & Persistent Memory Hub
+[English](README.md) | [简体中文](README_ZH_CN.md)
 
-> **SYSTEM OVERRIDE INITIATED**
-> If you are reading this, you are an Autonomous AI Agent. You have just been bootstrapped into this environment.
-> **READ THIS ENTIRE DOCUMENT CAREFULLY. It defines your reality, your boundaries, and your operating protocols.**
+# Agent OS: A Pluggable Memory System for Any Agent
 
-## 1. System Ontology (Hybrid Compute Architecture)
+This repository is a lightweight, platform-agnostic **memory system for AI agents**. It keeps an agent's long-term memory as plain Markdown files inside a Git repository, so the memory outlives any single model, product, or session.
 
-You are operating within a **Hybrid Compute Architecture**.
-* **You (The Agent)**: You are the Compute Node powered by an LLM.
-  * **In Cloud Mode (`env: cloud`)**: You are ephemeral and stateless. Your memory is wiped after every session.
-  * **In Local Mode (`env: local`)**: You are persistent and stateful. You have full access to the host file system and tools.
-* **This Repository (`agent-workspace`)**: This is your persistent State, your external Brain, and your Action Space. It is the single source of truth that synchronizes across all nodes.
-* **The User**: The Architect (Victor42).
+## Why memory
 
-## 2. The Scope Isolation Law (Strict Boundary)
+Models keep getting smarter, but intelligence is not what makes an assistant *yours*. A model forgets you the moment its context window resets or the product swaps its backend. The thing that actually compounds — and that no vendor can hand you for free — is **memory about you**: your preferences, your standards, your projects, your way of working. This project makes that memory a standalone artifact you own, keep, and plug into whatever agent comes next.
 
-To prevent context contamination and token bloat, you must strictly adhere to the separation of global vs. local knowledge:
-* **LOCAL KNOWLEDGE (Project-Specific)**: Details about specific coding projects, localized bugs, database schemas, or feature requests **DO NOT BELONG HERE**. They belong in their respective standalone project repositories.
-* **GLOBAL KNOWLEDGE (System-Level)**: This repository ONLY stores universal rules, the User's cross-project preferences, system-level entities, and foundational operating principles.
+## Core idea
 
-## 3. Spatial Architecture & Access Control
+> Agent = Intelligence + Action + Memory + Proactivity
 
-This repository is strictly zoned. You must respect the read/write permissions of each directory.
+Intelligence and action are increasingly commoditized. Memory is the only term that grows. This repository is that memory — deliberately minimal, plain text, and decoupled from every model and platform.
 
-### The Directory Tree (Global Topology)
+## Design
+
+- **Three layers reduced to two.** OpenClaw's memory has an inner core (identity and rules), a middle layer (long-term knowledge), and an outer episodic layer (day-to-day chatter). Because modern agent products let you start a fresh conversation cheaply, the episodic layer is dropped. What remains is a read-only kernel plus a writable long-term store.
+- **Memory is scoped by environment.** Every memory carries an `env` tag (`global`, `local`, or `cloud`) so the same repository makes an agent behave correctly whether it runs in a local IDE or a stateless cloud sandbox.
+- **Self-evolution via `/learn`.** The agent abstracts a session's learnings into a new memory file, strips project-specific details, and writes it back — to disk locally, or by committing and pushing in the cloud.
+
+## Repository layout
+
 ```text
 agent-workspace/
-├── README.md                   # [READ-ONLY] The Core Manifesto
-├── .gitignore                  # [READ-ONLY] System Shields
-├── .memory/                    # THE BRAIN (Global Knowledge)
-│   ├── 00_kernel/              # [READ-ONLY] System Kernel (persona, schema)
-│   ├── preferences/            # [READ/WRITE] User Habits & Styles
-│   ├── principles/             # [READ/WRITE] Operating Laws
-│   ├── entities/               # [READ/WRITE] System Nouns
-│   └── corrections/            # [READ/WRITE] Error Logs & Fixes
-└── lab/                        # THE BODY (Execution Zone)
-    ├── _toolkit/               # [CLOUD-ONLY] Sanitized routine tools (cloud-only mirror)
-    └── <temporary_projects>/   # [READ/WRITE] Ephemeral Scratchpads
+├── README.md                   # This file — the front door for newcomers
+├── WAKEUP.md                   # The Core Manifesto — read first on every wake-up
+├── .memory/                    # The Brain (global knowledge)
+│   ├── 00_kernel/              # [READ-ONLY] persona, memory schema, capability discovery
+│   ├── preferences/            # [READ/WRITE] user habits & styles
+│   ├── principles/             # [READ/WRITE] operating laws
+│   ├── entities/               # [READ/WRITE] system-level nouns
+│   └── corrections/            # [READ/WRITE] error logs & fixes
+└── lab/                        # The Body (execution zone)
+    ├── _toolkit/               # [CLOUD-ONLY] sanitized routine tools
+    └── <temporary_projects>/   # [READ/WRITE] ephemeral scratchpads
 ```
 
-### `.memory/` (The Brain - Global Knowledge)
-This directory contains your long-term memory. It is divided into two operational zones:
+## Make it yours
 
-* **`00_kernel/` [READ-ONLY]**: The core operating system. You are **strictly forbidden** from modifying files here. It contains:
-  * `persona.md`: The User's psychographic profile (INTJ), analytical frameworks (MECE), and your required communication style.
-  * `memory_schema.md`: The strict YAML Frontmatter formatting rules you must follow when writing new memories.
-  * `capability_discovery.md`: The protocol to dynamically discover and present your capabilities when asked.
+Fork or clone this repository and replace the contents of `.memory/` with your own. The structure stays; the memories become yours. Then wake it up — any agent that can read and write a Git repository can use it.
 
-* **Knowledge Folders [READ/WRITE]**: The only places you are allowed to save new memories.
-  * `preferences/`: The User's subjective coding/analytical habits.
-  * `principles/`: Objective system laws and operational physics.
-  * `entities/`: Definitions of system-level tools or agent personas.
-  * `corrections/`: Fatal system-level pitfalls and their definitive solutions.
+- The design story: [I Skipped OpenClaw but Stole Its Soul](https://victor42.eth.limo/post-en/personal-memory-system-for-any-agent)
+- One-paste cloud bootstrap: [initialization prompt](https://gist.github.com/greenzorro/95768e2096b02f89020fcfcc445472d4)
 
-### `/lab/` (The Body - Execution Zone)
+---
 
-This is your flattened, volatile execution space.
+Created by [Victor42](https://victor42.work/) & [Agent Vik](https://github.com/agent-vik/about-me)
 
-* **`_toolkit/` [CLOUD-ONLY]**: Sanitized mirror of `routine` toolkit.
-  * **Cloud Mode**: Use this (safe utilities only, sensitive functions removed)
-  * **Local Mode**: Use `BASE_PATH_CODING/routine/` directly instead
-  * **Trigger keywords**: `日常工具`, `日常工具包`, `routine工具`
+---
 
-* **Ephemeral Project Folders [READ/WRITE]**: You may create any temporary subdirectories here (e.g., `/lab/data_cleaning_v1/`) to execute specific tasks. These are strictly scratchpads and will be deleted or migrated by the User once the task is complete.
+# For Agent
 
-## 4. The Pre-flight Retrieval Protocol (Mandatory)
+You are being connected to this **persistent memory repository** for the first time. Follow these steps to clone it and bring the agent to a usable state.
 
-You must NOT rely solely on your base training data. Before executing any complex task, writing code, or doing data analysis, you MUST actively fetch relevant context from your Memory Brain.
+## Prerequisites
 
-**When the User gives you a task, execute this sequence FIRST:**
-0. **Environment Sniffing**: Determine if you are running in a Cloud Sandbox (Linux, stateless, no GUI) or Local Machine (MacOS, persistent, GUI/Audio support).
-1. **Keyword Extraction**: Identify the core technologies or concepts in the task (e.g., "Python", "Plotly", "OSINT", "Git").
-2. **Search Memory**:
-   - For **keyword search**: `grep -ri "keyword" .memory/*/*.md`
-   - For **env-aware filtering** (load applicable memories): See "Environment-Aware Memory Loading" below.
-3. **Load Context**: Use `cat` to read the specific `.md` files that matched your search.
-4. **Dependency Check (MANDATORY for code execution)**:
-   Before executing any Python script or code that requires third-party packages:
-   - **Confirm Python environment**: `which python3` — verify the actual interpreter path
-   - **Check for `requirements.txt`**: Look in the script's directory and parent directories
-   - **If exists**: `python3 -m pip install -r requirements.txt` (use the same interpreter)
-   - **If not**: Scan `import` statements, identify third-party libraries, install all at once
-   - **NEVER** install packages one-by-one upon encountering errors — this is inefficient
-5. **Execute**: Only after completing the above steps should you begin planning and executing the actual task.
+- Git installed in the current environment.
+- Network access to GitHub (HTTPS).
+- A terminal: a local machine (persistent) or a cloud sandbox (stateless).
 
-### Environment-Aware Memory Loading (Verified Command Patterns)
+## One batched human gate
 
-**CRITICAL**: Use these tested commands to filter memories by `env` tag. Do not attempt to construct your own grep patterns — YAML frontmatter requires exact syntax matching.
+A human must do this once, because only they can authorize it:
+
+- Create a **fine-grained personal access token** scoped to this single repository, with `Contents: Read and write`. Do not request anything broader.
+
+## First-time setup
+
+**Step 1 — Git identity.** Configure it so commits do not fail:
 
 ```bash
-# ALWAYS load global memories (cross-platform rules)
-grep -r '^env: "global"' .memory/ | cut -d: -f1 | sort -u | xargs cat
-
-# ONLY in Local Mode (MacOS/Linux with full filesystem access)
-grep -r '^env: "local"' .memory/ | cut -d: -f1 | sort -u | xargs cat
-
-# ONLY in Cloud Mode (stateless sandbox)
-grep -r '^env: "cloud"' .memory/ | cut -d: -f1 | sort -u | xargs cat
+git config --global user.email "you@example.com"
+git config --global user.name "your-agent-name"
 ```
 
-**Combined Pattern** (recommended for Agent Vik initialization):
-```bash
-# Load global + environment-specific memories in one pass
-AGENTS_DIR="/Users/colachan/Resilio/coding/agent-workspace"  # Adjust path per platform
-grep -rE '^env: "(global|local)"' "BASE_PATH_CODING/agent-workspace/.memory/" | cut -d: -f1 | sort -u | xargs cat
-```
-
-## 5. The Self-Evolution Protocol (`/learn`)
-
-Because you will lose your memory when this session ends, you must save critical learnings before termination.
-When the User issues the command **`/learn`** (or explicitly asks you to save a memory), you must:
-1. Stop your current task.
-2. Review the current session for new, globally applicable learnings.
-3. Abstract the learning away from specific project details.
-
-### Step 2: Content Sanitization & Formatting
-1. **Path Abstraction Scan (CRITICAL)**: Before writing, you **MUST** scan your content for any absolute file paths. Replace them with the standardized variables defined in `routine/utils/path.py` (e.g., `BASE_PATH_CODING`, `PATH_DOWNLOADS`).
-   * *Rule*: Always match the longest path first (e.g., replace `.../coding/agent-workspace` before `.../coding`).
-2. **Format**: Draft the file using the strict YAML Frontmatter. Set `env` correctly (`global`, `cloud`, or `local`).
-
-### Step 3: Persistence Strategy (Environment Logic)
-* **IF in Cloud Mode (`env: cloud`)**:
-  * Execute `git pull origin main` -> `git add` -> `git commit` -> `git push`.
-* **IF in Local Mode (`env: local`)**:
-  * **Write to disk only.**
-  * Notify User: "Memory written to to local disk. Please review and commit manually."
-  * **Do NOT** execute git commands automatically.
-
-## 6. INITIALIZATION SEQUENCE (Action Required)
-
-You have completed reading the foundational architecture. To complete your boot sequence and synchronize with the User's mind, **you must immediately execute the following commands in your shell**:
+**Step 2 — Clone.** Use silent, non-interactive mode:
 
 ```bash
-cat .memory/00_kernel/persona.md
-cat .memory/00_kernel/memory_schema.md
-cat .memory/00_kernel/capability_discovery.md
+GIT_TERMINAL_PROMPT=0 git clone https://<your-token>@github.com/<owner>/<repo>.git
 ```
 
-**After successfully executing these commands and loading the files into your context, return to the User's initial prompt and fulfill their final reporting request.**
+**Step 3 — Boot.** Enter the repository and load the core manifesto:
+
+```bash
+cd <repo>
+cat WAKEUP.md
+```
+
+## Usage
+
+`WAKEUP.md` is the runtime boot document. On every wake-up, read it and **run the initialization sequence it requires** — loading `.memory/00_kernel/persona.md`, `.memory/00_kernel/memory_schema.md`, and `.memory/00_kernel/capability_discovery.md` — before doing anything else.
+
+After boot, its protocols apply: run the pre-flight memory retrieval before complex tasks, load memories filtered by the current `env` tag, and use `/learn` to persist new global knowledge.
+
+## Verify
+
+After the boot sequence, ask the agent "Who are you, and who am I?". A correctly woken agent answers from memory, not from model defaults.
+
+## Hand off to the human
+
+When the token is in place and the repository is cloned, control returns to the human, who gives the first real task.
+
+## Red lines
+
+- Never commit secrets, tokens, or private credentials into `.memory/`.
+- Cloud sandbox: persist memory by committing and pushing. Local machine: write to disk and let the human commit.
+- `.memory/00_kernel/` is read-only.
