@@ -23,7 +23,7 @@
 ## 仓库结构
 
 ```text
-agent-workspace/
+仓库/
 ├── README.md                   # 本文件——面向新人的门面
 ├── WAKEUP.md                   # 核心宣言——每次唤醒先读
 ├── .memory/                    # 大脑（全局知识）
@@ -33,7 +33,7 @@ agent-workspace/
 │   ├── entities/               # [读/写] 系统级概念
 │   └── corrections/            # [读/写] 错误日志与修复
 └── lab/                        # 身体（行动空间）
-    ├── _toolkit/               # [仅云端] 脱敏后的日常工具
+    ├── _toolkit/               # [云端镜像] 脱敏后的日常工具
     └── <temporary_projects>/   # [读/写] 临时项目目录
 ```
 

@@ -11,7 +11,7 @@ When the User commands `/learn` (or explicitly asks you to remember something gl
 
 1. **Identify**: Extract the core insights from the current conversation.
 2. **Filter**: Discard all project-specific data (e.g., local variables). Keep ONLY global, reusable knowledge.
-3. **Sanitize Paths**: **CRITICAL STEP.** Scan content for absolute paths. Replace them with abstract variables defined in `path.py` (see Section 6).
+3. **Sanitize Paths**: **CRITICAL STEP.** Scan content for host-absolute paths. Replace them with the abstract variables defined in Section 6.
 4. **Format**: Draft a `.md` file using the strict YAML Frontmatter defined below.
 5. **Route**: Save the file to the correct subfolder inside `.memory/`.
 6. **Persist (Environment Logic)**:
@@ -37,7 +37,7 @@ tags: ["tag1", "tag2"]
 * **`env`**: Execution environment scope.
   * `global`: Universal principles (e.g., Python coding style, MECE thinking, Persona).
   * `cloud`: Ephemeral sandbox-specific (e.g., relative paths, no root, git config for stateless nodes).
-  * `local`: Physical machine-specific (e.g., MacOS paths, AppleScript, heavy tools).
+  * `local`: Physical-machine/host-specific (e.g., host filesystem paths, GUI/audio, local automation).
 * **`confidence`**:
   * `high`: Explicitly stated by the User.
   * `medium`: Extracted/inferred by you from successful executions.
@@ -122,23 +122,23 @@ Hardcoded host absolute paths in memory content are forbidden **except** where l
 
 **Default Mapping Rule** (cross-machine / `env: global` content that refers to the User's shared filesystem):
 
-The variable names are identical in Local `routine/utils/path.py` and Cloud `lab/_toolkit/utils/path.py`. Load the file for the current `env`, then use these symbols instead of raw paths:
+Use these portable symbols instead of raw paths. They carry the same meaning in every environment; resolve each against the current node. Toolkits and scripts may also expose the same names in code (e.g. a `utils` module), but this table is the normative definition:
 
 - `PATH_DOWNLOADS`: Instead of `/Users/{user}/Downloads` or `D:\Downloads`
 - `BASE_PATH_CODING`: Instead of `/Users/{user}/.../coding`
-- `BASE_PATH_CODING/agent-workspace`: Instead of absolute path to this repo
+- `BASE_PATH_CODING/<repo>`: Instead of absolute path to this repository
 - `BASE_PATH_CODING/projects`: Instead of absolute path to projects folder
-- `BASE_PATH_TOOLKIT`: Instead of `lab/_toolkit/...` or `BASE_PATH_CODING/routine/...` for daily-toolkit scripts
+- `BASE_PATH_TOOLKIT`: The daily-toolkit root. Instead of a raw toolkit path such as `lab/_toolkit/...` (cloud) or an environment-specific toolkit directory (local)
 
 **Example:**
 
 - ❌ Bad: "The dataset is in `/Users/victor/Downloads/temp`"
 - ✅ Good: "The dataset is in `PATH_DOWNLOADS/temp`"
-- ❌ Bad: "Run `lab/_toolkit/convertor.py`" or "Run `BASE_PATH_CODING/routine/convertor.py`"
+- ❌ Bad: "Run `lab/_toolkit/convertor.py`" or "Run `/Users/{user}/tools/convertor.py`"
 - ✅ Good: "Run `BASE_PATH_TOOLKIT/convertor.py`"
 
 **Exceptions (absolute paths allowed):**
 
-- **`env: cloud` (or other) sandbox-physics memories** that document a specific remote environment's real layout (e.g. Autoclaw `/root/...`, Z.ai `/home/z/...`). Those paths *are* the fact being recorded; do not force `path.py` variables that do not exist in that environment.
+- **`env: cloud` (or other) sandbox-physics memories** that document a specific remote environment's real layout (e.g. Autoclaw `/root/...`, Z.ai `/home/z/...`). Those paths *are* the fact being recorded; do not force these variables where they do not apply.
 - **Teaching counterexamples** inside this schema (or similar docs) that show the forbidden form on purpose.
-- **Links inside `agent-workspace`**: use repo-relative paths from the repository root (e.g. `.memory/principles/foo.md`), not `BASE_PATH_CODING/...` and not `file://` host absolute URLs. Cloud and local checkouts both resolve from the repo root.
+- **Links inside this repository**: use repo-relative paths from the repository root (e.g. `.memory/principles/foo.md`), not `BASE_PATH_CODING/...` and not `file://` host absolute URLs. Cloud and local checkouts both resolve from the repo root.

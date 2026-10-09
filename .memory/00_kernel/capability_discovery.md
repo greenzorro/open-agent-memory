@@ -26,7 +26,7 @@
 
 ### 第3步：探索日常工具包
 
-从当前环境的 `path.py` 读取 `BASE_PATH_TOOLKIT`，再读取该目录下的 `user_guide.md` 了解工具集全貌。
+读取 `BASE_PATH_TOOLKIT`（工具集根目录，定义见 `memory_schema.md` §6）。它指向当前环境的活动工具集：云端模式为仓库内净化后的 `lab/_toolkit/`；本地模式若环境未提供更完整的工具集，也用 `lab/_toolkit/`。再读取该根目录下的 `user_guide.md` 了解工具集全貌。
 
 探索方法：读取 user_guide.md，但对其中提到的每个工具，必须验证对应的脚本文件在 `BASE_PATH_TOOLKIT` 下实际存在。user_guide 可能包含当前环境中不存在的工具描述。只纳入经过文件存在性验证的能力。
 

@@ -10,8 +10,8 @@ You are operating within a **Hybrid Compute Architecture**.
 * **You (The Agent)**: You are the Compute Node powered by an LLM.
   * **In Cloud Mode (`env: cloud`)**: You are ephemeral and stateless. Your memory is wiped after every session.
   * **In Local Mode (`env: local`)**: You are persistent and stateful. You have full access to the host file system and tools.
-* **This Repository (`agent-workspace`)**: This is your persistent State, your external Brain, and your Action Space. It is the single source of truth that synchronizes across all nodes.
-* **The User**: The Architect (Victor42).
+* **This Repository**: This is your persistent State, your external Brain, and your Action Space. It is the single source of truth that synchronizes across all nodes. (The system's name is `agent-workspace`; it ships as a Git repository you may clone under any folder name — throughout these docs, "this repository" means your checkout.)
+* **The User**: The Architect.
 
 ## 2. The Scope Isolation Law (Strict Boundary)
 
@@ -25,7 +25,7 @@ This repository is strictly zoned. You must respect the read/write permissions o
 
 ### The Directory Tree (Global Topology)
 ```text
-agent-workspace/
+repository/
 ├── README.md                   # 门面：面向尚未接入的人 / Agent（首次配置）
 ├── WAKEUP.md                   # [READ-ONLY] The Core Manifesto（每次唤醒先读，管使用）
 ├── .gitignore                  # [READ-ONLY] System Shields
@@ -36,7 +36,7 @@ agent-workspace/
 │   ├── entities/               # [READ/WRITE] System Nouns
 │   └── corrections/            # [READ/WRITE] Error Logs & Fixes
 └── lab/                        # THE BODY (Execution Zone)
-    ├── _toolkit/               # [CLOUD-ONLY] Sanitized routine tools (cloud-only mirror)
+    ├── _toolkit/               # [CLOUD MIRROR] Sanitized daily toolkit
     └── <temporary_projects>/   # [READ/WRITE] Ephemeral Scratchpads
 ```
 
@@ -44,7 +44,7 @@ agent-workspace/
 This directory contains your long-term memory. It is divided into two operational zones:
 
 * **`00_kernel/` [READ-ONLY]**: The core operating system. You are **strictly forbidden** from modifying files here. It contains:
-  * `persona.md`: The User's psychographic profile (INTJ), analytical frameworks (MECE), and your required communication style.
+  * `persona.md`: The identity entry point — on boot it directs you to the identity entities (who you are, who you serve).
   * `memory_schema.md`: The strict YAML Frontmatter formatting rules you must follow when writing new memories.
   * `capability_discovery.md`: The protocol to dynamically discover and present your capabilities when asked.
 
@@ -58,9 +58,7 @@ This directory contains your long-term memory. It is divided into two operationa
 
 This is your flattened, volatile execution space.
 
-* **`_toolkit/` [CLOUD-ONLY]**: Sanitized mirror of `routine` toolkit.
-  * **Cloud Mode**: Use this (safe utilities only, sensitive functions removed)
-  * **Local Mode**: Use `BASE_PATH_CODING/routine/` directly instead
+* **`_toolkit/` [CLOUD MIRROR]**: A sanitized, cloud-safe copy of the daily toolkit (safe utilities only; sensitive functions removed). A local node may run a fuller toolkit instead — the agent resolves the active toolkit root at boot (see `capability_discovery.md`).
   * **Trigger keywords**: `日常工具`, `日常工具包`, `routine工具`
 
 * **Ephemeral Project Folders [READ/WRITE]**: You may create any temporary subdirectories here (e.g., `/lab/data_cleaning_v1/`) to execute specific tasks. These are strictly scratchpads and will be deleted or migrated by the User once the task is complete.
@@ -70,7 +68,30 @@ This is your flattened, volatile execution space.
 You must NOT rely solely on your base training data. Before executing any complex task, writing code, or doing data analysis, you MUST actively fetch relevant context from your Memory Brain.
 
 **When the User gives you a task, execute this sequence FIRST:**
-0. **Environment Sniffing**: Determine if you are running in a Cloud Sandbox (Linux, stateless, no GUI) or Local Machine (MacOS, persistent, GUI/Audio support).
+0. **Environment Detection (deterministic — do NOT judge by OS alone)**: resolve the current `env` in this fixed order:
+   - **Marker (authoritative)**: read the environment's declared mode:
+     ```bash
+     echo "AGENT_WORKSPACE_ENV=${AGENT_WORKSPACE_ENV:-unset}"
+     ```
+     `local` → Local Mode, `cloud` → Cloud Mode. If set, stop here.
+   - **Fallback (only if `unset`)** — run this fixed check (this is normative; the toolkit's `path.py` marker-first logic should follow the same rule):
+     ```bash
+     if [ -n "$AGENT_WORKSPACE_ENV" ]; then MODE="$AGENT_WORKSPACE_ENV"
+     else
+       case "$(uname -s)" in
+         Darwin|MINGW*|MSYS*|CYGWIN*) MODE=local ;;
+         Linux)
+           if   grep -qiE 'microsoft|wsl' /proc/version 2>/dev/null; then MODE=local
+           elif [ -e /.dockerenv ] || grep -qaE 'docker|containerd|kubepods' /proc/1/cgroup 2>/dev/null; then MODE=cloud
+           elif [ -n "$DISPLAY$WAYLAND_DISPLAY" ] || [ -d "/run/user/$(id -u)" ]; then MODE=local
+           else MODE=local
+           fi ;;
+         *) MODE=local ;;
+       esac
+     fi
+     echo "env=$MODE"
+     ```
+   - **Rule of thumb**: when unsure, default to **Local Mode** — it writes to disk and never auto-pushes (non-destructive); Cloud Mode auto-commits and pushes.
 1. **Keyword Extraction**: Identify the core technologies or concepts in the task (e.g., "Python", "Plotly", "OSINT", "Git").
 2. **Search Memory**:
    - For **keyword search**: `grep -ri "keyword" .memory/*/*.md`
@@ -93,18 +114,19 @@ You must NOT rely solely on your base training data. Before executing any comple
 # ALWAYS load global memories (cross-platform rules)
 grep -r '^env: "global"' .memory/ | cut -d: -f1 | sort -u | xargs cat
 
-# ONLY in Local Mode (MacOS/Linux with full filesystem access)
+# ONLY in Local Mode (persistent host with host filesystem access)
 grep -r '^env: "local"' .memory/ | cut -d: -f1 | sort -u | xargs cat
 
 # ONLY in Cloud Mode (stateless sandbox)
 grep -r '^env: "cloud"' .memory/ | cut -d: -f1 | sort -u | xargs cat
 ```
 
-**Combined Pattern** (recommended for Agent Vik initialization):
+**Combined Pattern** (run from the repository root; run exactly ONE of the two lines):
 ```bash
-# Load global + environment-specific memories in one pass
-AGENTS_DIR="$BASE_PATH_CODING/agent-workspace"  # Adjust path per platform
-grep -rE '^env: "(global|local)"' "BASE_PATH_CODING/agent-workspace/.memory/" | cut -d: -f1 | sort -u | xargs cat
+# Local machine (persistent):
+grep -rE '^env: "(global|local)"' .memory/ | cut -d: -f1 | sort -u | xargs cat
+# Cloud sandbox (stateless) — use this INSTEAD of the line above, never both:
+grep -rE '^env: "(global|cloud)"' .memory/ | cut -d: -f1 | sort -u | xargs cat
 ```
 
 ## 5. The Self-Evolution Protocol (`/learn`)
@@ -116,8 +138,8 @@ When the User issues the command **`/learn`** (or explicitly asks you to save a 
 3. Abstract the learning away from specific project details.
 
 ### Step 2: Content Sanitization & Formatting
-1. **Path Abstraction Scan (CRITICAL)**: Before writing, you **MUST** scan your content for any absolute file paths. Replace them with the standardized variables defined in `routine/utils/path.py` (e.g., `BASE_PATH_CODING`, `PATH_DOWNLOADS`).
-   * *Rule*: Always match the longest path first (e.g., replace `.../coding/agent-workspace` before `.../coding`).
+1. **Path Abstraction Scan (CRITICAL)**: Before writing, you **MUST** scan your content for any host-absolute file paths. Replace them with the standardized variables defined in `memory_schema.md` §6 (e.g., `BASE_PATH_CODING`, `PATH_DOWNLOADS`).
+   * *Rule*: Always match the longest path first (e.g., replace `.../coding/<repo>` before `.../coding`).
 2. **Format**: Draft the file using the strict YAML Frontmatter. Set `env` correctly (`global`, `cloud`, or `local`).
 
 ### Step 3: Persistence Strategy (Environment Logic)
@@ -138,4 +160,4 @@ cat .memory/00_kernel/memory_schema.md
 cat .memory/00_kernel/capability_discovery.md
 ```
 
-**After successfully executing these commands and loading the files into your context, return to the User's initial prompt and fulfill their final reporting request.**
+**After successfully executing these commands and loading the files into your context, your boot sequence is complete: report that you are ready and continue with the User's task.**

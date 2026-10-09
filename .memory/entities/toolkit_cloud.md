@@ -3,18 +3,13 @@ id: "mem-20260302-toolkit-cloud"
 type: "entity"
 env: "cloud"
 confidence: "high"
-tags: ["toolkit", "sanitized", "routine"]
+tags: ["toolkit", "sanitized", "cloud"]
 ---
 
 # _toolkit: 云端净化工具包
 
-## 背景
-**routine** 是本地的全能工具集（文件处理、数据转换、自动化、音视频处理），但包含敏感 API Key。
-
-**_toolkit** 是 `routine` 的净化副本：
-- 仅保留安全功能
-- 移除所有敏感 API Key（Gemini、DeepSeek、Kimi、OpenRouter、Replicate、Feishu、RunComfy）
-- 通过 GitHub 同步到云端
+## 定位
+`lab/_toolkit/` 是随本仓库分发的云端工具集，只保留安全、无需密钥的通用能力。
 
 ## 能力边界
 **包含**：基础工具、图像处理、视频处理、Telegram API、Groq AI
@@ -25,6 +20,6 @@ tags: ["toolkit", "sanitized", "routine"]
 
 ## 依赖安装
 ```bash
-cd ~/agent-workspace/lab/_toolkit
+cd lab/_toolkit
 pip install -r requirements.txt
 ```

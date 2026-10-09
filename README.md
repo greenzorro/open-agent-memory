@@ -23,7 +23,7 @@ Intelligence and action are increasingly commoditized. Memory is the only term t
 ## Repository layout
 
 ```text
-agent-workspace/
+repository/
 ├── README.md                   # This file — the front door for newcomers
 ├── WAKEUP.md                   # The Core Manifesto — read first on every wake-up
 ├── .memory/                    # The Brain (global knowledge)
@@ -33,7 +33,7 @@ agent-workspace/
 │   ├── entities/               # [READ/WRITE] system-level nouns
 │   └── corrections/            # [READ/WRITE] error logs & fixes
 └── lab/                        # The Body (execution zone)
-    ├── _toolkit/               # [CLOUD-ONLY] sanitized routine tools
+    ├── _toolkit/               # [CLOUD MIRROR] sanitized daily toolkit
     └── <temporary_projects>/   # [READ/WRITE] ephemeral scratchpads
 ```
 
