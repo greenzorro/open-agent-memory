@@ -137,17 +137,17 @@ When the User issues the command **`/learn`** (or explicitly asks you to save a 
 2. Review the current session for new, globally applicable learnings.
 3. Abstract the learning away from specific project details.
 
-### Step 2: Content Sanitization & Formatting
+### Content Sanitization & Formatting
 1. **Path Abstraction Scan (CRITICAL)**: Before writing, you **MUST** scan your content for any host-absolute file paths. Replace them with the standardized variables defined in `memory_schema.md` §6 (e.g., `BASE_PATH_CODING`, `PATH_DOWNLOADS`).
    * *Rule*: Always match the longest path first (e.g., replace `.../coding/<repo>` before `.../coding`).
 2. **Format**: Draft the file using the strict YAML Frontmatter. Set `env` correctly (`global`, `cloud`, or `local`).
 
-### Step 3: Persistence Strategy (Environment Logic)
+### Persistence Strategy (Environment Logic)
 * **IF in Cloud Mode (`env: cloud`)**:
   * Execute `git pull origin main` -> `git add` -> `git commit` -> `git push`.
 * **IF in Local Mode (`env: local`)**:
   * **Write to disk only.**
-  * Notify User: "Memory written to to local disk. Please review and commit manually."
+  * Notify User: "Memory written to local disk. Please review and commit manually."
   * **Do NOT** execute git commands automatically.
 
 ## 6. INITIALIZATION SEQUENCE (Action Required)

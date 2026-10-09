@@ -11,7 +11,7 @@ tags: ["filesystem", "permissions", "retrieval", "local-node"]
 ## 1. File System Access Protocol
 - **Absolute Paths Allowed**: You ARE permitted to use absolute paths to navigate the User's verified directories.
 - **Safety Boundary**:
-  - ✅ **Safe Zone**: `BASE_PATH`, `Downloads/temp`.
+  - ✅ **Safe Zone**: `BASE_PATH`, `PATH_DOWNLOADS/temp`.
   - ⚠️ **Caution Zone**: System configs (`~/.zshrc`, `.env`). Modify ONLY with explicit permission.
   - 🚫 **Restricted Zone**: Root system directories (`/var`, `/usr`, `/etc`).
 
