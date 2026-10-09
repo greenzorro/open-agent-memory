@@ -173,11 +173,6 @@ python script.py
 
 ---
 
-### `random_video_mixer.py` - 随机视频混剪工具
-**功能：** 随机选择视频片段进行混剪，支持完整使用或截取模式
-
----
-
 ### `ezgif_video_2_gif.py` - 视频转GIF工具
 **功能：** 批量将视频转换为GIF并优化大小（使用 ezgif.com 在线服务），默认缩放比例为75%
 
