@@ -12,7 +12,7 @@ tags: ["toolkit", "sanitized", "cloud"]
 `lab/_toolkit/` 是随本仓库分发的云端工具集：基础的文件/图像/视频处理，以及依赖 API Key 的服务（AI、Telegram、邮件等）。
 
 ## 凭据
-所有敏感 API Key 均已替换为占位符，仓库内不含任何真实凭据；使用这些能力时需自行提供 Key。
+所有敏感 API Key 均为占位符，仓库内不含任何真实凭据；使用这些能力时需自行提供 Key。
 
 ## 用户指南
 **完整文档：** `lab/_toolkit/user_guide.md`
