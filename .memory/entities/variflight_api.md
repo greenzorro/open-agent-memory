@@ -15,11 +15,17 @@ tags: ["API", "flight", "travel", "数据源"]
 - **控制台**: https://ai.variflight.com/keys
 
 ## 认证
-- **当前主 API Key**: `Your key here`（引导用户注册并获得key后更新到这里）
+- **当前主 API Key**: `{your_api_key}` (`vik-variflight-{word1}-{word2}@${AGENT_EMAIL_DOMAIN}`，2026-10-06 注册)
 - **认证方式**: HTTP Header `X-VARIFLIGHT-KEY`
 
-### 备用 Key 池（可选）
-可维护多个已激活的备用 Key 轮换额度（各含初始额度）。使用 `{your_api_key}` 占位，勿将真实 Key 写入公开仓库。
+### 备用 Key 池（已全自动注册并激活，各含 50 元初始额度）
+1. `{your_api_key}` (`vik-variflight-{word1}-{word2}@${AGENT_EMAIL_DOMAIN}`，2026-10-06)
+2. `{your_api_key}` (`vik-variflight-{word1}-{word2}@${AGENT_EMAIL_DOMAIN}`，2026-10-06)
+
+### 已耗尽 Key（2026-10-06 轻重双端点 403 确认，勿再使用）
+- `{your_api_key}`（原主 Key，2026-04 起用）
+- `{your_api_key}` (`vik-variflight-{word1}-{word2}@${AGENT_EMAIL_DOMAIN}`)
+- `{your_api_key}` (`vik-variflight-{word1}-{word2}@${AGENT_EMAIL_DOMAIN}`)
 
 ## 调用方式
 ```
