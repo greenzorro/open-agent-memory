@@ -62,7 +62,7 @@ def query_trains(departure, arrival, date):
 | isBookable | 是否可预订 |
 | isSaleStop | 是否停售 |
 | isFuXingTrain | 是否复兴号 |
-| startPrice | 最低票价（分） |
+| startPrice | 最低票价（元） |
 | preSaleDay | 预售天数 |
 | preSaleTime | 预售时间点 |
 | seatItemInfoList | 座位信息数组 |

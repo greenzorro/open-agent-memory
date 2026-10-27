@@ -14,7 +14,7 @@ tags: ["autoclaw", "sandbox", "沙盒", "git", "workspace", "限制", "平台特
 - 港口目录：`/root/.openclaw-autoclaw/workspace/artifacts/`、`DELIVERY/`
 - 项目目录：`/root/.openclaw-autoclaw/workspace/projects/`
 - 内置记忆：`/root/.openclaw-autoclaw/workspace/*.md`、`memory/`
-- 外挂记忆仓库：`/root/.openclaw-autoclaw/workspace/agent-workspace/`（独立 `.git`）
+- 记忆仓库：`/root/.openclaw-autoclaw/workspace/agent-workspace/`（独立 `.git`）
 
 ## 持久化规则
 
@@ -56,8 +56,8 @@ tags: ["autoclaw", "sandbox", "沙盒", "git", "workspace", "限制", "平台特
 - AutoGLM 系列 token 从本地服务自动获取（`http://127.0.0.1:18432/get_token`）
 - AutoGLM 脚本位于 `~/.openclaw-autoclaw/skills/autoglm-*/`，调用远端 API，出口 IP 独立于沙盒，可穿透上述 CDN 封锁
 - Cloudflare Browser Run 可用，边缘 IP 独立于沙盒
-- Variflight API key 存储在外挂记忆系统
-- 高德 API key 存储在外挂记忆系统
+- Variflight API key 存储在记忆系统
+- 高德 API key 存储在记忆系统
 - Cloudflare R2 必须使用 REST API，不能用 S3 兼容协议
 - 沙盒中无完整浏览器，无法与复杂 SPA 表单交互
 

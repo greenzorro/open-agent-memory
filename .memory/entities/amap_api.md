@@ -59,3 +59,7 @@ https://wprd0{s}.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&
 ## 注意事项
 - 坐标系: GCJ-02（非WGS-84），经纬度格式 `经度,纬度`
 - status=1 成功，status=0 失败
+- **地理编码只到城市/门牌级**：返回的 `level` 会自述精度（`省`/`市`/`区县`/`兴趣点`/`门牌号`），景点这类 POI 的精确坐标必须走 `place/text`，不要用 `geocode`
+- **`address` + `city` 传短地名会报 30001**：如 `address=中山陵&city=南京` → `ENGINE_RESPONSE_DATA_ERROR`；把城市写进地址（`南京市中山陵`）或直接改用 POI 检索
+- **地址首字会被当成独立地名**：`南京中山陵` 可能匹配到广东中山（adcode 442000），务必核对返回的 `adcode` 与 `city`
+- **瓦片实测**：`style=8` 返回 PNG、`style=6` 返回 JPEG，均 200；不带 key，不消耗配额
