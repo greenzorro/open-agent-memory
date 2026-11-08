@@ -28,7 +28,8 @@ tags: ["agentmore", "agent-more", "清言", "sandbox", "沙盒", "平台特征",
 - **三层模型**：
   1. 控制平面：会话 = 逻辑记录（主会话、cron 会话各自独立记账）
   2. 计算层：同 Pod 内多个进程树（主会话与 cron 实例 PPID 不同）
-  3. 存储层：所有实例共享 `/home/z/my-project` 文件系统
+  3. 存储层：所有实例共享同一文件系统——`/home/z` 全卷，不限于 `my-project`
+- **易失边界（实测）**：随会话实例重置的只有**进程与 RAM**——对话上下文清零、运行中进程灭失、uptime/进程列表从实例冷启动重新计起；**文件系统零重置**。hostname 跨会话稳定。会话冷启动 ≈ 同一持久节点上新开一个隔离进程实例，cron 触发同理——「新会话」与「新机器」是两回事，会话隔离是对话层的，不是机器层的
 
 ## Cron 定时任务行为（金丝雀实验实测）
 
@@ -51,7 +52,9 @@ tags: ["agentmore", "agent-more", "清言", "sandbox", "沙盒", "平台特征",
     └── db/custom.db              ← 平台内建数据库
 ```
 
-- **与 z.ai 沙盒的关键差异**：`my-project` 下**没有 `.git`**，不适用 zai 条目的 repo.tar 打包机制；实测文件在 Pod 整体替换后无丢失 → 持久化应为**卷挂载**而非会话结束打包（此推断 confidence: medium，机制未拆解验证，但"Pod 换新文件仍在"为实测）
+- **与 z.ai 沙盒的关键差异**：`my-project` 下**没有 `.git`**，不适用 zai 条目的 repo.tar 打包机制；跨会话留存靠文件系统自身持久，无需打包
+- **持久化边界（实测）**：`/home/z` 主目录**整体持久**——不止 `my-project`，`.venv`、`.uvcache`、`Drive`、`.npm`/`.bun` 等环境资产均跨会话实例存活（数月前创建的文件在全新实例中完好）。机制上 `/home/z` 并非独立挂载卷：与根 `/` 同属一个 overlay、同 device、`/proc/mounts` 无独立条目——持久由节点侧容器文件系统跨实例复用实现，宿主侧实现不可见（该层推断 confidence: medium；「文件跨实例存活」本身为 high）
+- **结论口径**：把平台理解成「一台持久节点 + 上面轮转的隔离会话进程」，而不是「每次会话随机新容器 + 外挂数据卷」——依赖安装、环境配置只装一次即可，装在 `/home/z` 下就不会因会话更替丢失
 - `skills/` 内置约 73 个平台技能（含 z-ai CLI `/usr/local/bin/z-ai`），平台侧管理
 - Bash 工具单次执行超时上限 10 分钟
 
@@ -61,7 +64,7 @@ tags: ["agentmore", "agent-more", "清言", "sandbox", "沙盒", "平台特征",
 
 | 目标 | 结果 |
 |------|------|
-| github.com / api.github.com | ✅ 200（github.com 走内网代理 `${INTERNAL_PROXY_IP}`，api 直连 `20.205.243.168`） |
+| github.com / api.github.com | ✅ 200（github.com 走内网代理 `${INTERNAL_PROXY_IP}`，api 直连 20.205.243.168） |
 | pypi.org / registry.npmjs.org / baidu.com | ✅ 200 |
 | google.com / youtube.com / api.telegram.org / api.openai.com / huggingface.co / medium.com | ❌ `000`（直连不通，无 DNS 可用结果） |
 | api.anthropic.com | ⚠️ 403（能建连，被 Cloudflare 按地区拒绝） |
@@ -87,7 +90,7 @@ tags: ["agentmore", "agent-more", "清言", "sandbox", "沙盒", "平台特征",
 
 ## Python 环境与网关风暴应对（2026-10-08 实测补充）
 
-- **系统默认 python = `/home/z/.venv`（持久 venv，PATH 默认首位）**——装第三方包一律 `uv pip install -p /home/z/.venv/bin/python`；沙盒 python 受 PEP 668 保护（externally-managed），pip 直装被拒
+- **系统默认 python = `/home/z/.venv`（持久 venv，PATH 默认首位）**——装第三方包一律 `uv pip install -p /home/z/.venv/bin/python`；沙盒 python 受 PEP 668 保护（externally-managed），pip 直装被拒。venv 的 PATH 优先级由容器编排层注入（`/etc/profile`、`~/.bashrc` 内均无此配置）——排查环境变量来源时先想到编排层，别只在文件里翻
 - **`/tmp` 是易失区**：venv、缓存、后台产物建在 /tmp 会在风暴/会话重建中丢失；重活一律用 `/home/z` 持久区（如 `UV_CACHE_DIR=/home/z/.uvcache`，断点续传不丢）
 - **网关风暴（504 broken session）行为模式**：
   - 长命令（>30-45s）高概率 504 被杀，且**整个进程组连 setsid/nohup 后台一起清**——"后台安装"在此平台不可靠
