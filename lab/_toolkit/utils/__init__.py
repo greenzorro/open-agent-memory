@@ -12,7 +12,7 @@ Description: utils 包入口，采用惰性加载。
 
 import importlib
 
-# 子模块登记表
+# 子模块登记表，同时也是 sync_toolkit 白名单净化的匹配目标。
 _submodules = [
     'path',
     'basic',

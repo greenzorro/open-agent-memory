@@ -1,13 +1,13 @@
 你的任务是查询一个固定日期区间的旅行天气预报，覆盖出发城市和每一个目的地。
-所有天气从 Open-Meteo API 获取数据，不采信任何其他渠道的数据。天气 API 的调用方法见 `agent-workspace/.memory/entities/open_meteo_api.md`。
+所有天气从 Open-Meteo API 获取数据，不采信任何其他渠道的数据。天气 API 的调用方法见 `.memory/entities/open_meteo_api.md`。
 
 ## 变量定义
 
-出发城市：杭州
+出发城市：{出发城市}
 
 | 目的地 | 日期区间        |
 | --- | ----------- |
-| 西安市 | 5月19日-5月24日 |
+| {目的地城市} | {日期区间} |
 
 ## 执行步骤
 

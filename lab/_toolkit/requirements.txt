@@ -8,6 +8,7 @@ numpy
 opencv-python
 requests
 beautifulsoup4
+send2trash     # optional - enables port_cleaner.py --delete-mode trash, falls back to permanent
 
 # Spreadsheet support
 pandas

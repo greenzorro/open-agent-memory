@@ -13,11 +13,16 @@ import shutil
 import argparse
 import errno
 import os
+try:
+    import send2trash
+except ImportError:
+    send2trash = None
 from datetime import datetime
 from pathlib import Path
 from utils.basic import get_param_value
 
 DEFAULT_TTL_DAYS = 7
+DEFAULT_DELETE_MODE = "permanent"
 
 
 def _ts():
@@ -114,7 +119,34 @@ def move_to_port(filepath: Path, port: Path, dry_run: bool = False):
     print(f"[{_ts()}] {prefix}[{filepath.name}] {action}: {dest.name}{action_suffix}")
 
 
-def purge_old_files(port: Path, ttl_days: int, dry_run: bool = False):
+def _delete_permanently(item: Path):
+    """Permanently remove a file or directory."""
+    if item.is_dir():
+        shutil.rmtree(str(item))
+    else:
+        item.unlink()
+
+
+def _purge_item(item: Path, delete_mode: str) -> str:
+    """Remove an item according to delete_mode.
+
+    :param Path item: file or directory to remove
+    :param str delete_mode: "permanent" to delete outright, or "trash" to try
+        the system recycle bin first and fall back to permanent deletion
+    :return: the method actually used — "trash" or "permanent"
+    """
+    if delete_mode == "trash" and send2trash is not None:
+        try:
+            send2trash.send2trash(str(item))
+            return "trash"
+        except Exception:
+            pass
+
+    _delete_permanently(item)
+    return "permanent"
+
+
+def purge_old_files(port: Path, ttl_days: int, delete_mode: str = DEFAULT_DELETE_MODE, dry_run: bool = False):
     """Delete files and directories in port/ older than TTL (based on st_mtime)."""
     now = time.time()
     ttl_seconds = ttl_days * 24 * 3600
@@ -125,18 +157,22 @@ def purge_old_files(port: Path, ttl_days: int, dry_run: bool = False):
 
     for item in port.iterdir():
         age = now - item.stat().st_mtime
-        if age > ttl_seconds:
-            action = "Would purge" if dry_run else "Purged"
-            if item.is_file():
-                size_kb = item.stat().st_size / 1024
-                if not dry_run:
-                    item.unlink()
-                print(f"[{_ts()}] File[{item.name}] {action}: {size_kb:.0f}KB, {age/86400:.1f} days old")
-            elif item.is_dir():
-                if not dry_run:
-                    shutil.rmtree(str(item))
-                print(f"[{_ts()}] Dir[{item.name}] {action}: {age/86400:.1f} days old")
-            purged_count += 1
+        if age <= ttl_seconds:
+            continue
+
+        prefix = "Dir" if item.is_dir() else "File"
+        if item.is_file():
+            detail = f"{item.stat().st_size / 1024:.0f}KB, {age/86400:.1f} days old"
+        else:
+            detail = f"{age/86400:.1f} days old"
+
+        if dry_run:
+            print(f"[{_ts()}] {prefix}[{item.name}] Would purge: {detail}")
+        else:
+            method = _purge_item(item, delete_mode)
+            suffix = "" if method == "trash" else " (permanent)"
+            print(f"[{_ts()}] {prefix}[{item.name}] Purged{suffix}: {detail}")
+        purged_count += 1
     return purged_count
 
 
@@ -154,6 +190,7 @@ def main():
     parser.add_argument("--exclude-dirs", nargs='+', help="根目录扫描时跳过的目录")
     parser.add_argument("--exclude-files", nargs='+', help="跳过的文件名")
     parser.add_argument("--ttl", type=int, help="文件过期天数（默认：7）")
+    parser.add_argument("--delete-mode", choices=["permanent", "trash"], help="过期文件删除方式（默认：permanent）")
     parser.add_argument("--dry-run", action="store_true", help="预览模式，不实际执行")
 
     args = parser.parse_args()
@@ -166,6 +203,7 @@ def main():
         args.exclude_dirs is None,
         args.exclude_files is None,
         args.ttl is None,
+        args.delete_mode is None,
         not args.dry_run
     ])
 
@@ -183,6 +221,7 @@ def main():
         print("  • 跳过目录：根目录扫描时忽略的目录（可直接回车跳过）")
         print("  • 跳过文件：扫描时忽略的文件名（可直接回车跳过）")
         print("  • 过期天数：港口中超过此天数的文件将被删除（默认7天）")
+        print("  • 删除方式：permanent（永久删除，默认）或 trash（回收站，失败则永久删除）")
         print()
         print("-" * 60)
         print()
@@ -217,10 +256,19 @@ def main():
             prompt_text="请输入要跳过的文件名（多个用空格分隔）"
         )
         exclude_files = exclude_files_input.split() if isinstance(exclude_files_input, str) else exclude_files_input
+
+        delete_mode_input = get_param_value(
+            args, 'delete_mode',
+            prompt_text="请输入删除方式 permanent/trash（默认 permanent）"
+        )
+        delete_mode = delete_mode_input.strip().lower() if isinstance(delete_mode_input, str) else ""
+        if delete_mode not in ("permanent", "trash"):
+            delete_mode = DEFAULT_DELETE_MODE
     else:
         sources = get_param_value(args, 'scan', script_default=[])
         exclude_dirs = get_param_value(args, 'exclude_dirs', script_default=[])
         exclude_files = get_param_value(args, 'exclude_files', script_default=[])
+        delete_mode = get_param_value(args, 'delete_mode', script_default=DEFAULT_DELETE_MODE)
 
     ttl_days = get_param_value(
         args, 'ttl',
@@ -253,6 +301,7 @@ def main():
     print(f"[{_ts()}] Port:    {port}")
     print(f"[{_ts()}] Sources: {', '.join(sources)}")
     print(f"[{_ts()}] TTL:     {ttl_days} days")
+    print(f"[{_ts()}] Delete:  {delete_mode}")
     print()
 
     # Phase 1: Consolidate scattered items
@@ -270,7 +319,7 @@ def main():
 
     # Phase 2: Purge expired items
     print(f"[{_ts()}] --- Phase 2: Purge expired items ---")
-    purged_count = purge_old_files(port, ttl_days, dry_run)
+    purged_count = purge_old_files(port, ttl_days, delete_mode, dry_run)
     if purged_count:
         print(f"[{_ts()}] Total: {purged_count} items purged")
     else:
