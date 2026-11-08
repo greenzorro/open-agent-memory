@@ -178,6 +178,11 @@ python script.py
 
 ---
 
+### `wechat_article_video_dl.py` - 微信公众号文章视频下载工具
+**功能：** 下载微信公众号文章正文内嵌的视频（mpvideo 类型，即 `wxv_*`），按文章顺序以视频标题命名落盘；同一视频含多档清晰度，可取最高清或全部
+
+---
+
 ## 音乐处理工具（music/）
 
 ### `music_list_2_txt.py` - 歌单转换工具
