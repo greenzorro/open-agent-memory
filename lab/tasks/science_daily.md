@@ -2,7 +2,7 @@
 1. 打开 https://www.sciencedaily.com/ ，浏览首页全部内容。
 2. 根据首页可见的信息，挑出5篇可信度最高、最有价值、可能对人类产生最深远影响的科学研究，逐一打开详情页阅读。
 3. 分别总结这5篇研究，输出一个1000字以内的简体中文文字版报告。
-4. 使用 `lab/_toolkit/utils/api_email.py` 的 `send_email_message`，把报告全文作为纯文本邮件发送出去。
+4. 使用 `lab/_toolkit/utils/api_email.py` 的 `send_email_message`，把报告全文作为纯文本邮件发送出去。（前提：`lab/_toolkit/utils/keys.json` 中已配好可用的发件凭据；未配置时改为把报告落盘保存，并在运行结果中说明未发送。）
 
 ## 输出要求
 

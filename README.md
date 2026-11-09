@@ -34,6 +34,8 @@ repository/
 │   └── corrections/            # [READ/WRITE] error logs & fixes
 └── lab/                        # The Body (execution zone)
     ├── _toolkit/               # [CLOUD MIRROR] sanitized daily toolkit
+    ├── scheduler/              # [READ/WRITE] one-cron shuttle for time-based tasks
+    ├── tasks/                  # [READ/WRITE] task bodies the shuttle runs
     └── <temporary_projects>/   # [READ/WRITE] ephemeral scratchpads
 ```
 

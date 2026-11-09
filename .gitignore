@@ -44,3 +44,6 @@ tmp/
 *.tmp
 *.temp
 
+# scheduler node adapter (node-local)
+lab/scheduler/env.sh
+

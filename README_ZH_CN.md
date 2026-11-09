@@ -34,6 +34,8 @@
 │   └── corrections/            # [读/写] 错误日志与修复
 └── lab/                        # 身体（行动空间）
     ├── _toolkit/               # [云端镜像] 脱敏后的日常工具
+    ├── scheduler/              # [读/写] 单 cron 班车，按时段跑任务
+    ├── tasks/                  # [读/写] 班车执行的任务正本
     └── <temporary_projects>/   # [读/写] 临时项目目录
 ```
 
